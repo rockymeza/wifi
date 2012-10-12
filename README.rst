@@ -21,21 +21,21 @@ Usage
 scan
 ====
 
-Shows a list of available networks.::
+Shows a list of available networks. ::
 
     usage: wifi scan
 
 list
 ====
 
-Shows a list of networks already configured.::
+Shows a list of networks already configured. ::
 
     usage: wifi list
 
 add, config
 ===========
 
-Prints or adds the configuration to connect to a new network.::
+Prints or adds the configuration to connect to a new network. ::
 
     usage: wifi config SCHEME [SSID]
     usage: wifi add SCHEME [SSID]
@@ -49,7 +49,7 @@ Prints or adds the configuration to connect to a new network.::
 connect
 =======
 
-Connects to the network corresponding to SCHEME.::
+Connects to the network corresponding to SCHEME. ::
 
     usage: wifi connect SCHEME
 
@@ -59,6 +59,6 @@ Connects to the network corresponding to SCHEME.::
 init
 ====
 
-Sets up your /etc/network/interfaces file to work with ifscheme.::
+Sets up your /etc/network/interfaces file to work with ifscheme. ::
 
     usage: wifi init
