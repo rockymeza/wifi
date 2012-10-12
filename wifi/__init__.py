@@ -153,6 +153,8 @@ def get_schemes():
 
 
 def connect(scheme):
+    assert scheme in get_schemes(), "I don't recognize that scheme"
+
     subprocess.check_call(['/sbin/ifdown', 'wlan0'])
     subprocess.check_call(['/sbin/ifscheme', scheme])
     subprocess.check_call(['/sbin/ifup', 'wlan0'])
