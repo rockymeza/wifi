@@ -25,7 +25,7 @@ setup(
     author='Rocky Meza, Gavin Wahl',
     author_email='rockymeza@gmail.com',
     description=__doc__,
-    long_description=read('README.md'),
+    long_description=read('README.rst'),
     packages=['wifi'],
     scripts=['bin/wifi'],
     platforms="Debian",
