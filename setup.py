@@ -31,4 +31,10 @@ setup(
     platforms="Debian",
     license='BSD',
     install_requires=install_requires,
+    classifiers = [
+        "License :: OSI Approved :: BSD License",
+        "Topic :: System :: Networking",
+        "Operating System :: POSIX :: Linux",
+        "Environment :: Console",
+    ],
 )
