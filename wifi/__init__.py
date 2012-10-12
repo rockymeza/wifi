@@ -134,7 +134,7 @@ def add(scheme, ssid=None):
     Creates configuration for a scheme and saves it to
     /etc/network/interfaces.
     """
-    assert scheme not in get_schemes(), 'That scheme has already been used'
+    assert scheme not in get_schemes(), "That scheme has already been used"
 
     configuration = show(scheme, ssid)
 
@@ -160,10 +160,10 @@ def init():
     Ensures that ifscheme is installed and configured.
     """
     if not os.path.exists('/sbin/ifscheme'):
-        sys.exit(sys.argv[0] + ' requires ifscheme, please install it.')
+        sys.exit(sys.argv[0] + " requires ifscheme, please install it.")
 
     with open('/etc/network/interfaces', 'a+') as f:
-        assert 'mapping wlan0' not in f.read(), '/etc/network/interfaces already seems to be configured.'
+        assert 'mapping wlan0' not in f.read(), "/etc/network/interfaces already seems to be configured."
 
         f.write(textwrap.dedent("""
         mapping wlan0
