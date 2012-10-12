@@ -1,0 +1,76 @@
+#!/usr/bin/python
+from __future__ import print_function
+import argparse
+import sys
+
+from wifi import * # NOQA
+
+
+def scan_command(args):
+    cells = iwlist()
+    print_table([[cell['signal'], cell['ssid'], cell['encrypted']] for cell in cells])
+
+
+def list_command(args):
+    for scheme in get_schemes():
+        print(scheme)
+
+
+def show_command(args):
+    print(show(args.scheme, args.ssid))
+
+
+def add_command(args):
+    add(args.scheme, args.ssid)
+
+
+def connect_command(args):
+    connect(args.scheme)
+
+
+def init_command(args):
+    init()
+
+
+parser = argparse.ArgumentParser()
+subparsers = parser.add_subparsers(help='commands')
+
+parser_scan = subparsers.add_parser('scan', help='Shows a list of available networks.')
+parser_scan.set_defaults(func=scan_command)
+
+parser_list = subparsers.add_parser('list', help='Shows a list of networks already configured.')
+parser_list.set_defaults(func=list_command)
+
+scheme_help = 'A memorable nickname for a wireless network.  If ssid is not provided, the network will be guessed using scheme.'
+ssid_help = 'The SSID for the network to which you wish to connect.  This is fuzzy matched, so you don\'t have to be precise.'
+
+parser_show = subparsers.add_parser('config', help='Prints the configuration to connect to a new network.')
+parser_show.add_argument('scheme', help=scheme_help)
+parser_show.add_argument('ssid', nargs='?', help=ssid_help)
+parser_show.set_defaults(func=show_command)
+
+parser_add = subparsers.add_parser('add', help='Adds the configuration to connect to a new network.')
+parser_add.add_argument('scheme', help=scheme_help)
+parser_add.add_argument('ssid', nargs='?', help=ssid_help)
+parser_add.set_defaults(func=add_command)
+
+parser_connect = subparsers.add_parser('connect', help='Connects to the network corresponding to scheme')
+parser_connect.add_argument('scheme', help='The nickname of the network to which you wish to connect.')
+parser_connect.set_defaults(func=connect_command)
+
+parser_init = subparsers.add_parser('init', help='Sets up your /etc/network/interfaces file to work with ifscheme.')
+parser_init.set_defaults(func=init_command)
+
+
+if len(sys.argv) == 1:
+    argv = ['scan']
+else:
+    argv = sys.argv[1:]
+
+args = parser.parse_args(argv)
+
+try:
+    args.func(args)
+except AssertionError as e:
+    sys.stderr.write('Error: ')
+    sys.exit(e.message)
