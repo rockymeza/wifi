@@ -122,7 +122,10 @@ def show(scheme, ssid=None):
 
     matches = filter(match_partial, cells)
 
-    assert len(set(cell['ssid'] for cell in matches)) == 1, 'Found more than one network that matches "{}"'.format(needle)
+    num_matches = len(set(cell['ssid'] for cell in matches))
+
+    assert num_matches > 0, "Couldn't find a network that matches '{}'".format(needle)
+    assert num_matches < 2, "Found more than one network that matches '{}'".format(needle)
 
     cell = matches[0]
 
