@@ -75,23 +75,17 @@ def print_table(matrix):
         print(format.format(*row))
 
 
-def configure(scheme, cell):
+def configuration(cell):
     """
-    Returns an iface configuration suitable for
-    /etc/network/interfaces.  If the cell is encrypted, will ask for
-    password.
-    """
-    context = {
-        'scheme': scheme,
-    }
-    context.update(cell)
+    Returns a dictionary of configuration options for cell
 
+    Asks for a password if necessary
+    """
     if cell['encrypted'] == 'off':
-        template = """
-        iface wlan0-{scheme} inet dhcp
-            wireless-essid {ssid}
-            wireless-channel auto
-        """
+        return {
+                'wireless-essid': cell['ssid'],
+                'wireless-channel': 'auto',
+                }
     else:
         if cell.get('encryption_type') == 'WPA2':
             passkey = raw_input('wpa passkey> ')
@@ -99,16 +93,26 @@ def configure(scheme, cell):
             if len(passkey) != 64:
                 passkey = pbkdf2_hex(passkey, cell['ssid'], 4096, 32)
 
-            template = """
-            iface wlan0-{scheme} inet dhcp
-                wpa-ssid {ssid}
-                wpa-psk  {passkey}
-                wireless-channel auto
-            """
+            return {
+                    'wpa-ssid': cell['ssid'],
+                    'wpa-psk': passkey,
+                    'wireless-channel': 'auto',
+                    }
+        else:
+            raise NotImplementedError
 
-            context.update({'passkey': passkey})
 
-    return textwrap.dedent(template).format(**context)
+def configure(scheme, cell):
+    """
+    Returns an iface configuration suitable for
+    /etc/network/interfaces.  If the cell is encrypted, will ask for
+    password.
+    """
+
+    config = configuration(cell)
+    iface = "iface wlan0-{scheme} inet dhcp\n".format(scheme=scheme)
+    options = '\n'.join("    {k} {v}".format(k=k, v=v) for k, v in config.items())
+    return iface + options
 
 
 def show(scheme, ssid=None):
