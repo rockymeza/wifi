@@ -84,9 +84,9 @@ def configuration(cell):
     """
     if cell['encrypted'] == 'off':
         return {
-                'wireless-essid': cell['ssid'],
-                'wireless-channel': 'auto',
-                }
+            'wireless-essid': cell['ssid'],
+            'wireless-channel': 'auto',
+        }
     else:
         if cell.get('encryption_type') == 'WPA2':
             passkey = raw_input('wpa passkey> ')
@@ -95,10 +95,10 @@ def configuration(cell):
                 passkey = pbkdf2_hex(passkey, cell['ssid'], 4096, 32)
 
             return {
-                    'wpa-ssid': cell['ssid'],
-                    'wpa-psk': passkey,
-                    'wireless-channel': 'auto',
-                    }
+                'wpa-ssid': cell['ssid'],
+                'wpa-psk': passkey,
+                'wireless-channel': 'auto',
+            }
         else:
             raise NotImplementedError
 
@@ -127,6 +127,7 @@ def find_cell(query):
     assert num_matches < 2, "Found more than one network that matches '{}'".format(query)
 
     return matches[0]
+
 
 def show(scheme, ssid=None):
     """
@@ -163,7 +164,8 @@ def connect(scheme, adhoc=False):
     if adhoc:
         cell = find_cell(scheme)
         config = configuration(cell)
-        args = list(itertools.chain.from_iterable(('-o', '{k}={v}'.format(k=k, v=v)) for k, v in config.items()))
+        args = list(itertools.chain.from_iterable(
+            ('-o', '{k}={v}'.format(k=k, v=v)) for k, v in config.items()))
         subprocess.check_call(['/sbin/ifdown', 'wlan0'])
         subprocess.check_call(['/sbin/ifup', 'wlan0'] + args)
     else:
