@@ -1,6 +1,7 @@
 import subprocess
 import re
 import textwrap
+import itertools
 
 from wifi.pbkdf2 import pbkdf2_hex
 
@@ -115,23 +116,23 @@ def configure(scheme, cell):
     return iface + options
 
 
-def show(scheme, ssid=None):
-    """
-    Creates configuration for a scheme.
-    """
+def find_cell(query):
     cells = iwlist()
-    needle = ssid or scheme
-    match_partial = lambda cell: match(needle, cell['ssid'])
+    match_partial = lambda cell: match(query, cell['ssid'])
 
     matches = filter(match_partial, cells)
 
     num_matches = len(set(cell['ssid'] for cell in matches))
+    assert num_matches > 0, "Couldn't find a network that matches '{}'".format(query)
+    assert num_matches < 2, "Found more than one network that matches '{}'".format(query)
 
-    assert num_matches > 0, "Couldn't find a network that matches '{}'".format(needle)
-    assert num_matches < 2, "Found more than one network that matches '{}'".format(needle)
+    return matches[0]
 
-    cell = matches[0]
-
+def show(scheme, ssid=None):
+    """
+    Creates configuration for a scheme.
+    """
+    cell = find_cell(ssid or scheme)
     return configure(scheme, cell)
 
 
@@ -158,8 +159,15 @@ def get_schemes():
     return scheme_re.findall(interfaces)
 
 
-def connect(scheme):
-    assert scheme in get_schemes(), "I don't recognize that scheme"
+def connect(scheme, adhoc=False):
+    if adhoc:
+        cell = find_cell(scheme)
+        config = configuration(cell)
+        args = list(itertools.chain.from_iterable(('-o', '{k}={v}'.format(k=k, v=v)) for k, v in config.items()))
+        subprocess.check_call(['/sbin/ifdown', 'wlan0'])
+        subprocess.check_call(['/sbin/ifup', 'wlan0'] + args)
+    else:
+        assert scheme in get_schemes(), "I don't recognize that scheme"
 
-    subprocess.check_call(['/sbin/ifdown', 'wlan0'])
-    subprocess.check_call(['/sbin/ifup', 'wlan0=wlan0-{}'.format(scheme)])
+        subprocess.check_call(['/sbin/ifdown', 'wlan0'])
+        subprocess.check_call(['/sbin/ifup', 'wlan0=wlan0-{}'.format(scheme)])

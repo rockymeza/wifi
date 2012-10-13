@@ -25,7 +25,7 @@ def add_command(args):
 
 
 def connect_command(args):
-    connect(args.scheme)
+    connect(args.scheme, args.adhoc)
 
 
 parser = argparse.ArgumentParser()
@@ -52,6 +52,7 @@ parser_add.set_defaults(func=add_command)
 
 parser_connect = subparsers.add_parser('connect', help="Connects to the network corresponding to SCHEME")
 parser_connect.add_argument('scheme', help="The nickname of the network to which you wish to connect.", metavar='SCHEME')
+parser_connect.add_argument('-a', '--ad-hoc', dest='adhoc', action="store_true", help="Connect to a network without storing it in the config file")
 parser_connect.set_defaults(func=connect_command)
 
 
