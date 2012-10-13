@@ -1,0 +1,25 @@
+#!/bin/bash
+
+_wifi()
+{
+  local cur prev opts
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+  #
+  #  Complete the arguments to some of the basic commands.
+  #
+  case $COMP_CWORD in
+    2)
+      COMPREPLY=($(compgen -W "`wifi __completion__ $prev`" -- ${cur}))
+      ;;
+    1)
+      COMPREPLY=($(compgen -W "`wifi __completion__`" -- ${cur}))  
+      ;;
+  esac
+
+  return 0
+}
+
+complete -F _wifi wifi

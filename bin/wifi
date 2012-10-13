@@ -65,13 +65,33 @@ def connect_command(args):
     scheme.activate()
 
 
+def __completion__(args):
+    """
+    TODO: make this automatic??
+    """
+    command_list = {
+        'scan': [],
+        'list': [],
+        'config': [],
+        'add': [],
+        'connect': [s.name for s in Scheme.all()],
+    }
+
+    if args.command:
+        ret = command_list[args.command]
+    else:
+        ret = command_list.keys()
+
+    print(' '.join(ret))
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-i',
                     '--interface',
                     default='wlan0',
                     help="Specifies which interface to use (wlan0, eth0, etc.)")
 
-subparsers = parser.add_subparsers(help='commands')
+subparsers = parser.add_subparsers(title='commands')
 
 parser_scan = subparsers.add_parser('scan', help="Shows a list of available networks.")
 parser_scan.set_defaults(func=scan_command)
@@ -108,6 +128,9 @@ parser_connect.add_argument('-a',
                             help="Connect to a network without storing it in the config file")
 parser_connect.set_defaults(func=connect_command)
 
+parser_completion = subparsers.add_parser('__completion__')
+parser_completion.add_argument('command', nargs='?')
+parser_completion.set_defaults(func=__completion__)
 
 if len(sys.argv) == 1:
     argv = ['scan']
