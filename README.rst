@@ -5,7 +5,6 @@ WiFi tools that could possibly work on a nice day, if you are lucky.
 
 ::
 
-    # apt-get install ifscheme
     # pip install wifi
     # wifi --help
 
@@ -55,10 +54,3 @@ Connects to the network corresponding to SCHEME. ::
 
     positional arguments:
       SCHEME      The nickname of the network to which you wish to connect.
-
-init
-====
-
-Sets up your /etc/network/interfaces file to work with ifscheme. ::
-
-    usage: wifi init

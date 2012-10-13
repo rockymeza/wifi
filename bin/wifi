@@ -28,10 +28,6 @@ def connect_command(args):
     connect(args.scheme)
 
 
-def init_command(args):
-    init()
-
-
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(help='commands')
 
@@ -57,9 +53,6 @@ parser_add.set_defaults(func=add_command)
 parser_connect = subparsers.add_parser('connect', help="Connects to the network corresponding to SCHEME")
 parser_connect.add_argument('scheme', help="The nickname of the network to which you wish to connect.", metavar='SCHEME')
 parser_connect.set_defaults(func=connect_command)
-
-parser_init = subparsers.add_parser('init', help="Sets up your /etc/network/interfaces file to work with ifscheme.")
-parser_init.set_defaults(func=init_command)
 
 
 if len(sys.argv) == 1:

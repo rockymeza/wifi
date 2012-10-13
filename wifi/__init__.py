@@ -1,12 +1,11 @@
 import subprocess
 import re
 import textwrap
-import os
-import sys
 
 from wifi.pbkdf2 import pbkdf2_hex
 
 
+scheme_re = re.compile(r'(?:iface|map)\s+wlan0-(\w+)')
 cells_re = re.compile(r'Cell \d+ - Address:')
 
 extractors = {
@@ -149,28 +148,14 @@ def get_schemes():
     """
     Returns a list of schemes that have already been configured.
     """
-    return subprocess.check_output(['/sbin/ifscheme', '-l']).strip().split('\n')
+    with open('/etc/network/interfaces', 'r') as f:
+        interfaces = f.read()
+
+    return scheme_re.findall(interfaces)
 
 
 def connect(scheme):
     assert scheme in get_schemes(), "I don't recognize that scheme"
 
     subprocess.check_call(['/sbin/ifdown', 'wlan0'])
-    subprocess.check_call(['/sbin/ifscheme', scheme])
-    subprocess.check_call(['/sbin/ifup', 'wlan0'])
-
-
-def init():
-    """
-    Ensures that ifscheme is installed and configured.
-    """
-    if not os.path.exists('/sbin/ifscheme'):
-        sys.exit(sys.argv[0] + " requires ifscheme, please install it.")
-
-    with open('/etc/network/interfaces', 'a+') as f:
-        assert 'mapping wlan0' not in f.read(), "/etc/network/interfaces already seems to be configured."
-
-        f.write(textwrap.dedent("""
-        mapping wlan0
-            script ifscheme-mapping
-        """))
+    subprocess.check_call(['/sbin/ifup', 'wlan0=wlan0-{}'.format(scheme)])
