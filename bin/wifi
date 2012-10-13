@@ -78,7 +78,10 @@ def __completion__(args):
     }
 
     if args.command:
-        ret = command_list[args.command]
+        try:
+            ret = command_list[args.command]
+        except KeyError:
+            ret = []
     else:
         ret = command_list.keys()
 
