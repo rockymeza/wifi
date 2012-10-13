@@ -7,9 +7,6 @@ _wifi()
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-  #
-  #  Complete the arguments to some of the basic commands.
-  #
   case $COMP_CWORD in
     2)
       COMPREPLY=($(compgen -W "`wifi __completion__ $prev`" -- ${cur}))
