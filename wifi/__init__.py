@@ -3,8 +3,7 @@ import re
 import textwrap
 import itertools
 
-from wifi.pbkdf2 import pbkdf2_hex
-
+from wifi import keyderiv
 
 scheme_re = re.compile(r'(?:iface|map)\s+wlan0-(\w+)')
 cells_re = re.compile(r'Cell \d+ - Address:')
@@ -92,7 +91,7 @@ def configuration(cell):
             passkey = raw_input('wpa passkey> ')
 
             if len(passkey) != 64:
-                passkey = pbkdf2_hex(passkey, cell['ssid'], 4096, 32)
+                passkey = keyderiv.wpa2(passkey, cell['ssid'])
 
             return {
                 'wpa-ssid': cell['ssid'],
