@@ -99,6 +99,14 @@ def configuration(cell):
                 'wpa-psk': passkey,
                 'wireless-channel': 'auto',
             }
+        # no encryption_type means WEP
+        elif 'encryption_type' not in cell:
+            key = raw_input('wep key> ')
+            return {
+                'wireless-essid': cell['ssid'],
+                'wireless-key': key,
+                'wireless-channel': 'auto',
+            }
         else:
             raise NotImplementedError
 
