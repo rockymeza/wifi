@@ -65,7 +65,7 @@ def connect_command(args):
     scheme.activate()
 
 
-def __completion__(args):
+def completion(args):
     """
     TODO: make this automatic??
     """
@@ -77,9 +77,9 @@ def __completion__(args):
         'connect': [s.name for s in Scheme.all()],
     }
 
-    if args.command:
+    if len(args):
         try:
-            ret = command_list[args.command]
+            ret = command_list[args[0]]
         except KeyError:
             ret = []
     else:
@@ -131,19 +131,18 @@ parser_connect.add_argument('-a',
                             help="Connect to a network without storing it in the config file")
 parser_connect.set_defaults(func=connect_command)
 
-parser_completion = subparsers.add_parser('__completion__')
-parser_completion.add_argument('command', nargs='?')
-parser_completion.set_defaults(func=__completion__)
-
 if len(sys.argv) == 1:
     argv = ['scan']
 else:
     argv = sys.argv[1:]
 
-args = parser.parse_args(argv)
+if argv[0] == '__completion__':
+    completion(argv[1:])
+else:
+    args = parser.parse_args(argv)
 
-try:
-    args.func(args)
-except AssertionError as e:
-    sys.stderr.write("Error: ")
-    sys.exit(e.message)
+    try:
+        args.func(args)
+    except AssertionError as e:
+        sys.stderr.write("Error: ")
+        sys.exit(e.message)
