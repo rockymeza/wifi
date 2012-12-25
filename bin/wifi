@@ -4,11 +4,12 @@ import argparse
 import sys
 
 from wifi import * # NOQA
+from wifi.utils import print_table
 
 
 def scan_command(args):
-    cells = iwlist()
-    print_table([[cell['signal'], cell['ssid'], cell['encrypted']] for cell in cells])
+    cells = scan()
+    print_table([[cell.signal, cell.ssid, 'protected' if cell.encrypted else 'unprotected'] for cell in cells])
 
 
 def list_command(args):
