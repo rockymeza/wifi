@@ -24,7 +24,7 @@ def configure(scheme, cell):
     if not cell.encrypted:
         template = """
         iface wlan0-{scheme} inet dhcp
-            wireless-ssid {cell.ssid}
+            wireless-essid {cell.ssid}
             wireless-channel auto
         """
     else:
