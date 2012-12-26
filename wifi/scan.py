@@ -1,4 +1,4 @@
-import subprocess
+import subprocess_compat as subprocess
 import re
 import textwrap
 

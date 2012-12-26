@@ -26,7 +26,7 @@ def print_table(matrix):
     Prints a left-aligned table of elements.
     """
     lengths = [max(map(len, column)) for column in zip(*matrix)]
-    format = '  '.join('{{:<{0}}}'.format(length) for length in lengths)
+    format = '  '.join('{{{0}:<{1}}}'.format(i, length) for i, length in enumerate(lengths))
 
     for row in matrix:
         print(format.format(*row))

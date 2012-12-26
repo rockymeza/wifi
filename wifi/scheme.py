@@ -1,5 +1,5 @@
 import re
-import subprocess
+import subprocess_compat as subprocess
 import itertools
 
 from wifi.pbkdf2 import pbkdf2_hex
