@@ -44,7 +44,11 @@ import hmac
 import hashlib
 from struct import Struct
 from operator import xor
-from itertools import izip, starmap
+from itertools import starmap
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
 
 
 _pack_int = Struct('>I').pack

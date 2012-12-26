@@ -1,6 +1,7 @@
-import subprocess_compat as subprocess
 import re
 import textwrap
+
+import wifi.subprocess_compat as subprocess
 
 
 class Cell(object):
@@ -12,7 +13,7 @@ class Cell(object):
 
     @classmethod
     def all(cls, interface):
-        iwlist_scan = subprocess.check_output(['/sbin/iwlist', interface, 'scan'])
+        iwlist_scan = subprocess.check_output(['/sbin/iwlist', interface, 'scan']).decode('utf-8')
 
         cells = map(normalize, cells_re.split(iwlist_scan)[1:])
 
@@ -20,7 +21,7 @@ class Cell(object):
 
     @classmethod
     def where(cls, interface, fn):
-        return filter(fn, cls.all(interface))
+        return list(filter(fn, cls.all(interface)))
 
 
 cells_re = re.compile(r'Cell \d+ - ')

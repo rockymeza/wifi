@@ -11,7 +11,7 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
-install_requires = []
+install_requires = ['setuptools']
 try:
     import argparse # NOQA
 except:

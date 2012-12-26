@@ -1,7 +1,7 @@
 import re
-import subprocess_compat as subprocess
 import itertools
 
+import wifi.subprocess_compat as subprocess
 from wifi.pbkdf2 import pbkdf2_hex
 
 
@@ -53,7 +53,7 @@ class Scheme(object):
 
     @classmethod
     def where(cls, fn):
-        return filter(fn, cls.all())
+        return list(filter(fn, cls.all()))
 
     @classmethod
     def find(cls, interface, name):
