@@ -9,6 +9,8 @@ WiFi tools that could possibly work on a nice day, if you are lucky.
     # wifi --help
 
 
+.. image:: https://travis-ci.org/rockymeza/wifi.png?branch=master
+   :target: https://travis-ci.org/rockymeza/wifi
 
 Usage
 ^^^^^
