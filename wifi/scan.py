@@ -2,7 +2,26 @@ import subprocess
 import re
 import textwrap
 
-from wifi.models import Cell
+
+class Cell(object):
+    def __init__(self):
+        self.bitrates = []
+
+    def __repr__(self):
+        return 'Cell(ssid={ssid})'.format(**vars(self))
+
+    @classmethod
+    def all(cls, interface):
+        iwlist_scan = subprocess.check_output(['/sbin/iwlist', interface, 'scan'])
+
+        cells = map(normalize, cells_re.split(iwlist_scan)[1:])
+
+        return cells
+
+    @classmethod
+    def where(cls, interface, fn):
+        return filter(fn, cls.all(interface))
+
 
 cells_re = re.compile(r'Cell \d+ - ')
 quality_re = re.compile(r'Quality=(\d+/\d+).*Signal level=(-\d+) dBm')
@@ -78,7 +97,7 @@ def normalize(cell_block):
 
                 # consume remaining block
                 values = [value]
-                while lines[0].startswith(' ' * 4):
+                while lines and lines[0].startswith(' ' * 4):
                     values.append(lines.pop(0).strip())
 
                 if 'WPA2' in value:
@@ -86,11 +105,3 @@ def normalize(cell_block):
             elif key in normalize_value:
                 setattr(cell, key, normalize_value[key](value))
     return cell
-
-
-def scan():
-    iwlist_scan = subprocess.check_output(['/sbin/iwlist', 'wlan0', 'scan'])
-
-    cells = map(normalize, cells_re.split(iwlist_scan)[1:])
-
-    return cells

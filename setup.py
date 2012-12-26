@@ -28,10 +28,11 @@ setup(
     long_description=read('README.rst'),
     packages=['wifi'],
     scripts=['bin/wifi'],
+    test_suite='tests',
     platforms="Debian",
     license='BSD',
     install_requires=install_requires,
-    classifiers = [
+    classifiers=[
         "License :: OSI Approved :: BSD License",
         "Topic :: System :: Networking",
         "Operating System :: POSIX :: Linux",

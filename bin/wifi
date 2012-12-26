@@ -3,33 +3,74 @@ from __future__ import print_function
 import argparse
 import sys
 
-from wifi import * # NOQA
-from wifi.utils import print_table
+from wifi.scan import Cell
+from wifi.scheme import Scheme
+from wifi.utils import print_table, match as fuzzy_match
+
+
+def find_cell(interface, query):
+    match_partial = lambda cell: fuzzy_match(query, cell.ssid)
+
+    matches = Cell.where(interface, match_partial)
+
+    num_matches = len(set(cell.ssid for cell in matches))
+    assert num_matches > 0, "Couldn't find a network that matches '{}'".format(query)
+    assert num_matches < 2, "Found more than one network that matches '{}'".format(query)
+
+    return matches[0]
+
+
+def scheme_for_ssid(interface, scheme, ssid=None):
+    cell = find_cell(interface, ssid or scheme)
+
+    passkey = None if not cell.encrypted else raw_input('wpa passkey> ')
+
+    return Scheme.for_cell(interface, scheme, cell, passkey)
 
 
 def scan_command(args):
-    cells = scan()
-    print_table([[cell.signal, cell.ssid, 'protected' if cell.encrypted else 'unprotected'] for cell in cells])
+    print_table([[cell.signal, cell.ssid, 'protected' if cell.encrypted else 'unprotected'] for cell in Cell.all(args.interface)])
 
 
 def list_command(args):
-    for scheme in get_schemes():
-        print(scheme)
+    for scheme in Scheme.all():
+        print(scheme.name)
 
 
 def show_command(args):
-    print(show(args.scheme, args.ssid))
+    scheme = scheme_for_ssid(args.interface, args.scheme, args.ssid)
+    print(scheme)
 
 
 def add_command(args):
-    add(args.scheme, args.ssid)
+    assert not Scheme.find(args.interface, args.scheme), "That scheme has already been used"
+
+    scheme = scheme_for_ssid(args.interface, args.scheme, args.ssid)
+    scheme.save()
 
 
 def connect_command(args):
-    connect(args.scheme)
+    if args.adhoc:
+        # ensure that we have the adhoc utility scheme
+        try:
+            adhoc_scheme = Scheme(args.interface, 'adhoc')
+            adhoc_scheme.save()
+        except AssertionError:
+            pass
+
+        scheme = scheme_for_ssid(args.interface, 'adhoc', args.scheme)
+    else:
+        scheme = Scheme.find(args.interface, args.scheme)
+
+    scheme.activate()
 
 
 parser = argparse.ArgumentParser()
+parser.add_argument('-i',
+                    '--interface',
+                    default='wlan0',
+                    help="Specifies which interface to use (wlan0, eth0, etc.)")
+
 subparsers = parser.add_subparsers(help='commands')
 
 parser_scan = subparsers.add_parser('scan', help="Shows a list of available networks.")
@@ -38,21 +79,33 @@ parser_scan.set_defaults(func=scan_command)
 parser_list = subparsers.add_parser('list', help="Shows a list of networks already configured.")
 parser_list.set_defaults(func=list_command)
 
-scheme_help = "A memorable nickname for a wireless network.  If SSID is not provided, the network will be guessed using SCHEME."
-ssid_help = "The SSID for the network to which you wish to connect.  This is fuzzy matched, so you don't have to be precise."
+scheme_help = ("A memorable nickname for a wireless network."
+               "  If SSID is not provided, the network will be guessed using SCHEME.")
+ssid_help = ("The SSID for the network to which you wish to connect."
+             "  This is fuzzy matched, so you don't have to be precise.")
 
-parser_show = subparsers.add_parser('config', help="Prints the configuration to connect to a new network.")
+parser_show = subparsers.add_parser('config',
+                                    help="Prints the configuration to connect to a new network.")
 parser_show.add_argument('scheme', help=scheme_help, metavar='SCHEME')
 parser_show.add_argument('ssid', nargs='?', help=ssid_help, metavar='SSID')
 parser_show.set_defaults(func=show_command)
 
-parser_add = subparsers.add_parser('add', help="Adds the configuration to connect to a new network.")
+parser_add = subparsers.add_parser('add',
+                                   help="Adds the configuration to connect to a new network.")
 parser_add.add_argument('scheme', help=scheme_help, metavar='SCHEME')
 parser_add.add_argument('ssid', nargs='?', help=ssid_help, metavar='SSID')
 parser_add.set_defaults(func=add_command)
 
-parser_connect = subparsers.add_parser('connect', help="Connects to the network corresponding to SCHEME")
-parser_connect.add_argument('scheme', help="The nickname of the network to which you wish to connect.", metavar='SCHEME')
+parser_connect = subparsers.add_parser('connect',
+                                       help="Connects to the network corresponding to SCHEME")
+parser_connect.add_argument('scheme',
+                            help="The nickname of the network to which you wish to connect.",
+                            metavar='SCHEME')
+parser_connect.add_argument('-a',
+                            '--ad-hoc',
+                            dest='adhoc',
+                            action="store_true",
+                            help="Connect to a network without storing it in the config file")
 parser_connect.set_defaults(func=connect_command)
 
 
