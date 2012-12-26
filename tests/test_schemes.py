@@ -1,7 +1,7 @@
 from unittest import TestCase
 import tempfile
 
-from wifi.config import extract_schemes, Scheme
+from wifi.scheme import extract_schemes, Scheme
 
 
 NETWORK_INTERFACES_FILE = """
