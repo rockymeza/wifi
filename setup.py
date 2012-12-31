@@ -13,11 +13,11 @@ def read(fname):
 
 install_requires = ['setuptools']
 try:
-    import argparse # NOQA
+    import argparse
 except:
     install_requires.append('argparse')
 
-version = '0.0.1'
+version = '0.1.0'
 
 setup(
     name='wifi',

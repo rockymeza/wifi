@@ -31,6 +31,12 @@ def configuration(cell, passkey=None):
 
 
 class Scheme(object):
+    """
+    Saved configuration for connecting to a wireless network.  This
+    class provides a Python interface to the /etc/network/interfaces
+    file.
+    """
+
     interfaces = '/etc/network/interfaces'
 
     def __init__(self, interface, name, options=None):
@@ -39,6 +45,10 @@ class Scheme(object):
         self.options = options or {}
 
     def __str__(self):
+        """
+        Returns the representation of a scheme that you would need
+        in the /etc/network/interfaces file.
+        """
         iface = "iface {interface}-{name} inet dhcp".format(**vars(self))
         options = ''.join("\n    {k} {v}".format(k=k, v=v) for k, v in self.options.items())
         return iface + options + '\n'
@@ -48,6 +58,9 @@ class Scheme(object):
 
     @classmethod
     def all(cls):
+        """
+        Returns an generator of saved schemes.
+        """
         with open(cls.interfaces, 'r') as f:
             return extract_schemes(f.read())
 
@@ -57,6 +70,10 @@ class Scheme(object):
 
     @classmethod
     def find(cls, interface, name):
+        """
+        Returns a :class:`Scheme` or `None` based on interface and
+        name.
+        """
         try:
             return cls.where(lambda s: s.interface == interface and s.name == name)[0]
         except IndexError:
@@ -64,9 +81,16 @@ class Scheme(object):
 
     @classmethod
     def for_cell(cls, interface, name, cell, passkey=None):
+        """
+        Intuits the configuration needed for a specific
+        :class:`Cell` and creates a :class:`Scheme` for it.
+        """
         return cls(interface, name, configuration(cell, passkey))
 
     def save(self):
+        """
+        Writes the configuration to the :attr:`interfaces` file.
+        """
         assert not Scheme.find(self.interface, self.name)
 
         with open(self.interfaces, 'a') as f:
@@ -84,6 +108,9 @@ class Scheme(object):
         return [self.interface + '=' + self.iface] + args
 
     def activate(self):
+        """
+        Connects to the network as configured in this scheme.
+        """
         subprocess.check_call(['/sbin/ifdown', self.interface])
         subprocess.check_call(['/sbin/ifup'] + self.as_args())
 

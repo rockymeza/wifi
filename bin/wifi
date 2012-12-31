@@ -4,8 +4,7 @@ import argparse
 import sys
 import os
 
-from wifi.scan import Cell
-from wifi.scheme import Scheme
+from wifi import Cell, Scheme
 from wifi.utils import print_table, match as fuzzy_match
 
 

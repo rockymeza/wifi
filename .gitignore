@@ -2,3 +2,4 @@
 *.egg*
 build/
 dist/
+docs/_build

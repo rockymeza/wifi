@@ -5,6 +5,10 @@ import wifi.subprocess_compat as subprocess
 
 
 class Cell(object):
+    """
+    Presents a Python interface to the output of iwlist.
+    """
+
     def __init__(self):
         self.bitrates = []
 
@@ -13,6 +17,10 @@ class Cell(object):
 
     @classmethod
     def all(cls, interface):
+        """
+        Returns a list of all cells extracted from the output of
+        iwlist.
+        """
         iwlist_scan = subprocess.check_output(['/sbin/iwlist', interface, 'scan']).decode('utf-8')
 
         cells = map(normalize, cells_re.split(iwlist_scan)[1:])
@@ -21,6 +29,10 @@ class Cell(object):
 
     @classmethod
     def where(cls, interface, fn):
+        """
+        Runs a filter over the output of :meth:`all` and the returns
+        a list of cells that match that filter.
+        """
         return list(filter(fn, cls.all(interface)))
 
 
