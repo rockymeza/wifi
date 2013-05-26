@@ -30,3 +30,4 @@ Documentation
 
     wifi_command
     scanning
+    changelog
