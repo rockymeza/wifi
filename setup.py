@@ -29,7 +29,7 @@ setup(
     packages=['wifi'],
     scripts=['bin/wifi'],
     test_suite='tests',
-    platforms="Debian",
+    platforms=["Debian"],
     license='BSD',
     install_requires=install_requires,
     classifiers=[

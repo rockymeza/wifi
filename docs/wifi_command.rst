@@ -52,5 +52,6 @@ Connects to the network corresponding to SCHEME. ::
 Completion
 ^^^^^^^^^^
 
-The wifi command also comes with bash completion.
-To use the completion, source the `bash_completion` file that comes with the distribution.
+The wifi command also comes packaged with completion for bash.
+If you want to write completion for your own shell, wifi provides an interface for extracting completion information.
+Please see the ``wifi-completion.bash`` and ``bin/wifi`` files for more information.

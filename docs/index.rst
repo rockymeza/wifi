@@ -11,19 +11,22 @@ It is inspired by `ifscheme`.
 
 The library also comes with an executable that you can use to manage your WiFi connections.
 
-Contents:
+
+Installation
+------------
+
+Wifi is available for installation on PyPI::
+
+    $ pip install wifi
+
+This will install the :doc:`the wifi command <wifi_command>`, a Python library for discovering and connecting to wifi networks, and a bash completion file for the wifi command.
+
+
+Documentation
+-------------
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   wifi_command
-   scanning
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+    wifi_command
+    scanning
