@@ -38,4 +38,7 @@ setup(
         "Operating System :: POSIX :: Linux",
         "Environment :: Console",
     ],
+    data_files=[
+        ('/etc/bash_completion.d/', ['extras/wifi-completion.bash']),
+    ]
 )
