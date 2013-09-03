@@ -13,7 +13,7 @@ except NameError:
     pass
 
 
-def find_cell(interface, query):
+def fuzzy_find_cell(interface, query):
     match_partial = lambda cell: fuzzy_match(query, cell.ssid)
 
     matches = Cell.where(interface, match_partial)
@@ -23,6 +23,16 @@ def find_cell(interface, query):
     assert num_matches < 2, "Found more than one network that matches '{}'".format(query)
 
     return matches[0]
+
+
+def find_cell(interface, query):
+    cell = Cell.where(interface, lambda cell: cell.ssid.lower() == query.lower())
+
+    try:
+        cell = cell[0]
+    except IndexError:
+        cell = fuzzy_find_cell(interface, query)
+    return cell
 
 
 def scheme_for_ssid(interface, scheme, ssid=None):
