@@ -117,4 +117,7 @@ def normalize(cell_block):
                     cell.encryption_type = 'wpa2'
             elif key in normalize_value:
                 setattr(cell, key, normalize_value[key](value))
+
+    if cell.encrypted and not hasattr(cell, 'encryption_type'):
+        cell.encryption_type = 'wep'
     return cell

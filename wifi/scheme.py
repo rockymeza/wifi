@@ -26,6 +26,11 @@ def configuration(cell, passkey=None):
                 'wpa-psk': passkey,
                 'wireless-channel': 'auto',
             }
+        elif cell.encryption_type == 'wep':
+            return {
+                'wireless-essid': cell.ssid,
+                'wireless-key': passkey,
+            }
         else:
             raise NotImplementedError
 
