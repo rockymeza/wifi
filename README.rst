@@ -1,7 +1,9 @@
 wifi
 ----
 
-WiFi tools that could possibly work on a nice day, if you are lucky.
+Wifi provides a command line wrapper for iwlist and /etc/network/interfaces
+that makes it easier to connect the WiFi networks from the command line.  The
+wifi command is also implemented as a library that can be used from Python.
 
 ::
 

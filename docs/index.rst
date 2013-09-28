@@ -10,6 +10,14 @@ Wifi is built on top the old technologies of the `/etc/network/interfaces` file 
 It is inspired by `ifscheme`.
 
 The library also comes with an executable that you can use to manage your WiFi connections.
+Wifi currently supports the following encryption types:
+
+-  No encryption
+-  WEP
+-  WPA2
+
+If you need support for other network types, please file a bug on GitHub and we'll definitely try to get to it.
+Patches, of course, are always welcome.
 
 
 Installation
@@ -31,3 +39,10 @@ Documentation
     wifi_command
     scanning
     changelog
+
+Contributing
+------------
+
+The (very little) development for wifi happens on GitHub.
+If you ever run into issues with wifi, please don't hesitate to open an issue.
+Pull requests are welcome.

@@ -3,7 +3,8 @@ from setuptools import setup
 import os
 
 __doc__ = """
-WiFi tools that could possibly work on a nice day, if you are lucky.
+Command line tool and library wrappers around iwlist and
+/etc/network/interfaces.
 """
 
 
@@ -37,6 +38,10 @@ setup(
         "Topic :: System :: Networking",
         "Operating System :: POSIX :: Linux",
         "Environment :: Console",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.3",
     ],
     data_files=[
         ('/etc/bash_completion.d/', ['extras/wifi-completion.bash']),
