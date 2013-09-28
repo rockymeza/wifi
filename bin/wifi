@@ -7,6 +7,11 @@ import os
 from wifi import Cell, Scheme
 from wifi.utils import print_table, match as fuzzy_match
 
+try:  # Python 2.x
+    input = raw_input
+except NameError:
+    pass
+
 
 def find_cell(interface, query):
     match_partial = lambda cell: fuzzy_match(query, cell.ssid)
@@ -23,7 +28,7 @@ def find_cell(interface, query):
 def scheme_for_ssid(interface, scheme, ssid=None):
     cell = find_cell(interface, ssid or scheme)
 
-    passkey = None if not cell.encrypted else raw_input('wpa passkey> ')
+    passkey = None if not cell.encrypted else input('passkey> ')
 
     return Scheme.for_cell(interface, scheme, cell, passkey)
 
