@@ -18,14 +18,20 @@ class Cell(object):
     @classmethod
     def all(cls, interface):
         """
-        Returns a list of all cells extracted from the output of
-        iwlist.
+        Returns a list of all cells extracted from the output of iwlist.
         """
         iwlist_scan = subprocess.check_output(['/sbin/iwlist', interface, 'scan']).decode('utf-8')
-
-        cells = map(normalize, cells_re.split(iwlist_scan)[1:])
+        cells = map(Cell.from_string, cells_re.split(iwlist_scan)[1:])
 
         return cells
+
+    @classmethod
+    def from_string(cls, cell_string):
+        """
+        Parses the output of iwlist scan for one cell and returns a Cell
+        object for it.
+        """
+        return normalize(cell_string)
 
     @classmethod
     def where(cls, interface, fn):
@@ -79,10 +85,8 @@ def split_on_colon(string):
 
 
 def normalize(cell_block):
-    """
-    The cell blocks come in with the every line except the first
-    indented 20 spaces.  This will remove all of that extra stuff.
-    """
+    # The cell blocks come in with every line except the first indented at
+    # least 20 spaces.  This removes the first 20 spaces off of those lines.
     lines = textwrap.dedent(' ' * 20 + cell_block).splitlines()
     cell = Cell()
 
@@ -90,7 +94,8 @@ def normalize(cell_block):
         line = lines.pop(0)
 
         if line.startswith('Quality'):
-            cell.quality, cell.signal = quality_re.search(line).groups()
+            cell.quality, signal = quality_re.search(line).groups()
+            cell.signal = int(signal)
         elif line.startswith('Bit Rates'):
             values = split_on_colon(line)[1].split('; ')
 
@@ -117,4 +122,10 @@ def normalize(cell_block):
                     cell.encryption_type = 'wpa2'
             elif key in normalize_value:
                 setattr(cell, key, normalize_value[key](value))
+
+    # It seems that encryption types other than WEP need to specify their
+    # existence.
+    if cell.encrypted and not hasattr(cell, 'encryption_type'):
+        cell.encryption_type = 'wep'
+
     return cell
