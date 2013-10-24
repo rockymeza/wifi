@@ -1,3 +1,10 @@
+from __future__ import print_function, unicode_literals
+
+import sys
+
+
+if sys.version < '3':
+    str = unicode
 
 
 def match(needle, haystack):
@@ -21,12 +28,12 @@ def match(needle, haystack):
     return score
 
 
-def print_table(matrix):
+def print_table(matrix, sep='  ', file=sys.stdout, *args, **kwargs):
     """
     Prints a left-aligned table of elements.
     """
-    lengths = [max(map(len, column)) for column in zip(*matrix)]
-    format = '  '.join('{{{0}:<{1}}}'.format(i, length) for i, length in enumerate(lengths))
+    lengths = [max(map(len, map(str, column))) for column in zip(*matrix)]
+    format = sep.join('{{{0}:<{1}}}'.format(i, length) for i, length in enumerate(lengths))
 
     for row in matrix:
-        print(format.format(*row))
+        print(format.format(*row).strip(), file=file, *args, **kwargs)

@@ -3,7 +3,7 @@ from unittest import TestCase
 from wifi.scan import Cell
 
 
-class TestSchemes(TestCase):
+class IWListParserTest(TestCase):
     def test_no_encryption(self):
         cell = Cell.from_string(IWLIST_SCAN_NO_ENCRYPTION)
         self.assertFalse(cell.encrypted)
