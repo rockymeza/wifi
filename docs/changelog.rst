@@ -5,7 +5,7 @@ Changelog
 -----
 :release-date: 2013-11-22
 
-- Fixed print_table str/int bug
+- Fixed print_table str/int bug (#13 - thanks DanLipsitt)
 
 0.2.0
 -----
