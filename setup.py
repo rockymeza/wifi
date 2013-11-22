@@ -18,7 +18,7 @@ try:
 except:
     install_requires.append('argparse')
 
-version = '0.2.0'
+version = '0.2.1'
 
 setup(
     name='wifi',
