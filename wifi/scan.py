@@ -2,6 +2,7 @@ import re
 import textwrap
 
 import wifi.subprocess_compat as subprocess
+from wifi.utils import ScanFail
 
 
 class Cell(object):
@@ -20,7 +21,10 @@ class Cell(object):
         """
         Returns a list of all cells extracted from the output of iwlist.
         """
-        iwlist_scan = subprocess.check_output(['/sbin/iwlist', interface, 'scan']).decode('utf-8')
+        try:
+            iwlist_scan = subprocess.check_output(['/sbin/iwlist', interface, 'scan']).decode('utf-8')
+        except subprocess.CalledProcessError:
+            raise ScanFail()
         cells = map(Cell.from_string, cells_re.split(iwlist_scan)[1:])
 
         return cells

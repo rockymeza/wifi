@@ -37,3 +37,7 @@ def print_table(matrix, sep='  ', file=sys.stdout, *args, **kwargs):
 
     for row in matrix:
         print(format.format(*row).strip(), file=file, *args, **kwargs)
+
+
+class ScanFail(Exception):
+    pass
