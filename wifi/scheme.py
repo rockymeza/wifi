@@ -3,6 +3,7 @@ import itertools
 
 import wifi.subprocess_compat as subprocess
 from wifi.pbkdf2 import pbkdf2_hex
+from wifi.utils import ConnectionFail
 
 
 def configuration(cell, passkey=None):
@@ -34,6 +35,8 @@ def configuration(cell, passkey=None):
         else:
             raise NotImplementedError
 
+
+address_bound_re = re.compile(r'bound to (\d+.\d+.\d+.\d+)')
 
 class Scheme(object):
     """
@@ -116,8 +119,22 @@ class Scheme(object):
         """
         Connects to the network as configured in this scheme.
         """
-        subprocess.check_call(['/sbin/ifdown', self.interface])
-        subprocess.check_call(['/sbin/ifup'] + self.as_args())
+
+        subprocess.check_output(['/sbin/ifdown', self.interface], stderr=subprocess.STDOUT)
+        output = subprocess.check_output(['/sbin/ifup'] + self.as_args(), stderr=subprocess.STDOUT)
+
+        lines = output.splitlines()
+        address = None
+        for line in lines:
+            if line.startswith('bound to '):
+                match_result = address_bound_re.search(line)
+                if match_result is not None:
+                    address = match_result.groups()[0]
+                    break
+        if address is None:
+            raise ConnectionFail
+        else:
+            return address
 
 
 # TODO: support other interfaces
