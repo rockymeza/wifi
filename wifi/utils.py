@@ -39,5 +39,5 @@ def print_table(matrix, sep='  ', file=sys.stdout, *args, **kwargs):
         print(format.format(*row).strip(), file=file, *args, **kwargs)
 
 
-class ScanFail(Exception):
+class InterfaceFail(Exception):
     pass
