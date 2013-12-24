@@ -3,7 +3,7 @@ import itertools
 
 import wifi.subprocess_compat as subprocess
 from wifi.pbkdf2 import pbkdf2_hex
-from wifi.utils import ConnectionFail
+from wifi.exceptions import ConnectionError
 
 
 def configuration(cell, passkey=None):
@@ -132,7 +132,7 @@ class Scheme(object):
                     address = match_result.groups()[0]
                     break
         if address is None:
-            raise ConnectionFail
+            raise ConnectionError
         else:
             return address
 
