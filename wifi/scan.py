@@ -100,7 +100,8 @@ def normalize(cell_block):
                 if match_result is not None:
                     cell.quality, signal = match_result.groups()
                     if re_name == 'relative':
-                        cell.signal = int((int(signal.split('/')[0]) / int(signal.split('/')[1])) * 100)
+                        actual, total = map(int, signal.split('/'))
+                        cell.signal = int((actual / total) * 100)
                     else:
                         cell.signal = int(signal)
                     break
