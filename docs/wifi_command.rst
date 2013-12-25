@@ -124,10 +124,13 @@ connect
 
 Connects to the network corresponding to SCHEME. ::
 
-    usage: wifi connect SCHEME
+    usage: wifi connect [-a] SCHEME
 
     positional arguments:
-      SCHEME      The nickname of the network to which you wish to connect.
+      SCHEME        The nickname of the network to which you wish to connect.
+
+    optional arguments:
+      -a, --ad-hoc  Connect to a network without storing it in the config file
 
 
 Completion
