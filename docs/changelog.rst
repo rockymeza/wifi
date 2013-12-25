@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2.2
+-----
+:release-date: 2013-12-25
+
+- Fixed relative signal parsing bug (#12 - thanks alexykot)
+
 0.2.1
 -----
 :release-date: 2013-11-22
