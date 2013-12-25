@@ -43,7 +43,8 @@ class Cell(object):
 
 
 cells_re = re.compile(r'Cell \d+ - ')
-quality_re = re.compile(r'Quality=(\d+/\d+).*Signal level=(-\d+) dBm')
+quality_re_dict = {'dBm': re.compile(r'Quality=(\d+/\d+).*Signal level=(-\d+) dBm'),
+                   'relative': re.compile(r'Quality=(\d+/\d+).*Signal level=(\d+/\d+)')}
 frequency_re = re.compile(r'([\d\.]+ .Hz).*')
 
 
@@ -94,8 +95,17 @@ def normalize(cell_block):
         line = lines.pop(0)
 
         if line.startswith('Quality'):
-            cell.quality, signal = quality_re.search(line).groups()
-            cell.signal = int(signal)
+            for re_name, quality_re in quality_re_dict.items():
+                match_result = quality_re.search(line)
+                if match_result is not None:
+                    cell.quality, signal = match_result.groups()
+                    if re_name == 'relative':
+                        actual, total = map(int, signal.split('/'))
+                        cell.signal = int((actual / total) * 100)
+                    else:
+                        cell.signal = int(signal)
+                    break
+
         elif line.startswith('Bit Rates'):
             values = split_on_colon(line)[1].split('; ')
 
