@@ -24,6 +24,17 @@ class IWListParserTest(TestCase):
         self.assertTrue(cell.encrypted)
         self.assertEqual(cell.encryption_type, 'wpa2')
 
+    def test_alternative_iwlist_output(self):
+        # https://github.com/rockymeza/wifi/issues/12
+        cell = Cell.from_string(ALTERNATIVE_OUTPUT)
+        self.assertEqual(cell.quality, '78/100')
+        #self.assertEqual(cell.signal, 0)
+
+    def test_noname_cell(self):
+        cell = Cell.from_string(NONAME_WIRELESS_NETWORK)
+        self.assertEqual(cell.ssid, '')
+
+
 
 IWLIST_SCAN_NO_ENCRYPTION = """Cell 02 - Address: 38:83:45:CC:58:74
                     Channel:6
@@ -51,7 +62,6 @@ IWLIST_SCAN_NO_ENCRYPTION = """Cell 02 - Address: 38:83:45:CC:58:74
                     IE: Unknown: DD0900037F01010000FF7F
 """
 
-
 IWLIST_SCAN_WEP = """Cell 01 - Address: 00:21:27:35:1B:E8
                     Channel:6
                     Frequency:2.437 GHz (Channel 6)
@@ -73,7 +83,6 @@ IWLIST_SCAN_WEP = """Cell 01 - Address: 00:21:27:35:1B:E8
                     IE: Unknown: DD0900037F01010008FF7F
                     IE: Unknown: DD1A00037F0301000000002127351BE8022127351BE864002C010808
 """
-
 
 IWLIST_SCAN_WPA2 = """Cell 08 - Address: 00:22:B0:98:5E:77
                     Channel:1
@@ -111,4 +120,39 @@ IWLIST_SCAN_WPA2 = """Cell 08 - Address: 00:22:B0:98:5E:77
                     IE: Unknown: DD1A00904C3401050700000000000000000000000000000000000000
                     IE: Unknown: DD050050F20500
                     IE: Unknown: DD750050F204104A00011010440001021041000100103B00010310470010C59BF13CE0C57AA1476C0022B0985E7710210006442D4C696E6B102300074449522D363035102400074449522D3630351042000830303030303030301054000800060050F2040001101100074449522D36303510080002008E
+"""
+
+ALTERNATIVE_OUTPUT = """Cell 06 - Address: F2:23:DB:A3:3B:A0
+                    ESSID:"Antons iPhone"
+                    Protocol:IEEE 802.11g
+                    Mode:Master
+                    Frequency:2.412 GHz (Channel 1)
+                    Encryption key:on
+                    Bit Rates:54 Mb/s
+                    Extra:rsn_ie=30140100000fac040100000fac040100000fac020c00
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : CCMP
+                        Pairwise Ciphers (1) : CCMP
+                        Authentication Suites (1) : PSK
+                    Quality=78/100  Signal level=16/100
+"""
+
+NONAME_WIRELESS_NETWORK = """Cell 01 - Address: A4:56:30:E8:97:F0
+                    ESSID:""
+                    Protocol:IEEE 802.11gn
+                    Mode:Master
+                    Frequency:2.437 GHz (Channel 6)
+                    Encryption key:on
+                    Bit Rates:144 Mb/s
+                    Extra:wpa_ie=dd1c0050f20101000050f20202000050f2020050f20401000050f2020000
+                    IE: WPA Version 1
+                        Group Cipher : TKIP
+                        Pairwise Ciphers (2) : TKIP CCMP
+                        Authentication Suites (1) : PSK
+                    Extra:rsn_ie=30180100000fac020200000fac02000fac040100000fac022800
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : TKIP
+                        Pairwise Ciphers (2) : TKIP CCMP
+                        Authentication Suites (1) : PSK
+                    Quality=84/100  Signal level=43/100  
 """
