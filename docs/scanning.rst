@@ -9,7 +9,7 @@ Discovering networks
 You can use this library to scan for networks that are available in the air.
 To get a list of the different cells in the area, you can do ::
 
-    >>> from wifi.scan import Cell
+    >>> from wifi import Cell, Scheme
     >>> Cell.all('wlan0')
 
 This returns a list of :class:`Cell` objects.  Under the hood, this calls `iwlist scan` and parses the unfriendly output.
