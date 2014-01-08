@@ -76,6 +76,7 @@ def connect_command(args):
         scheme = scheme_for_ssid(args.interface, 'adhoc', args.scheme)
     else:
         scheme = Scheme.find(args.interface, args.scheme)
+        assert scheme, "Couldn't find a scheme named %r, did you mean to use -a?" % args.scheme
 
     scheme.activate()
 
