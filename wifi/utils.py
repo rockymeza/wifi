@@ -46,3 +46,10 @@ def db2dbm(quality):
     """
     dbm = int((quality / 2) - 100)
     return min(max(dbm, -100), -50)
+
+
+def ensure_file_exists(filename):
+    """
+    http://stackoverflow.com/a/12654798/1013960
+    """
+    open(filename, 'a').close()

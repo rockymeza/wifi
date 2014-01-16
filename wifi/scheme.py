@@ -3,6 +3,7 @@ import itertools
 
 import wifi.subprocess_compat as subprocess
 from wifi.pbkdf2 import pbkdf2_hex
+from wifi.utils import ensure_file_exists
 
 
 def configuration(cell, passkey=None):
@@ -44,6 +45,17 @@ class Scheme(object):
 
     interfaces = '/etc/network/interfaces'
 
+    @classmethod
+    def for_file(cls, interfaces):
+        """
+        A class factory for providing a nice way to specify the interfaces file
+        that you want to use.  Use this instead of directly overwriting the
+        interfaces Class attribute if you care about thread safety.
+        """
+        return type(cls)(cls.__name__, (cls,), {
+            'interfaces': interfaces,
+        })
+
     def __init__(self, interface, name, options=None):
         self.interface = interface
         self.name = name
@@ -66,8 +78,9 @@ class Scheme(object):
         """
         Returns an generator of saved schemes.
         """
+        ensure_file_exists(cls.interfaces)
         with open(cls.interfaces, 'r') as f:
-            return extract_schemes(f.read())
+            return extract_schemes(f.read(), scheme_class=cls)
 
     @classmethod
     def where(cls, fn):
@@ -96,7 +109,7 @@ class Scheme(object):
         """
         Writes the configuration to the :attr:`interfaces` file.
         """
-        assert not Scheme.find(self.interface, self.name)
+        assert not self.find(self.interface, self.name), "This scheme already exists"
 
         with open(self.interfaces, 'a') as f:
             f.write('\n')
@@ -142,7 +155,7 @@ class Scheme(object):
 scheme_re = re.compile(r'iface\s+(?P<interface>wlan\d?)(?:-(?P<name>\w+))?')
 
 
-def extract_schemes(interfaces):
+def extract_schemes(interfaces, scheme_class=Scheme):
     lines = interfaces.splitlines()
     while lines:
         line = lines.pop(0)
@@ -162,6 +175,6 @@ def extract_schemes(interfaces):
                 key, value = re.sub(r'\s{2,}', ' ', lines.pop(0).strip()).split(' ', 1)
                 options[key] = value
 
-            scheme = Scheme(interface, scheme, options)
+            scheme = scheme_class(interface, scheme, options)
 
             yield scheme

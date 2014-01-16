@@ -39,13 +39,15 @@ iface wlan0-coffee2 inet dhcp
 
 class TestSchemes(TestCase):
     def setUp(self):
-        self.tempfile, Scheme.interfaces = tempfile.mkstemp()
+        self.tempfile, interfaces = tempfile.mkstemp()
 
-        with open(Scheme.interfaces, 'w') as f:
+        with open(interfaces, 'w') as f:
             f.write(NETWORK_INTERFACES_FILE)
 
+        self.Scheme = Scheme.for_file(interfaces)
+
     def tearDown(self):
-        os.remove(Scheme.interfaces)
+        os.remove(self.Scheme.interfaces)
 
     def test_scheme_extraction(self):
         work, coffee, home, coffee2 = extract_schemes(NETWORK_INTERFACES_FILE)
@@ -57,28 +59,28 @@ class TestSchemes(TestCase):
         assert coffee.options['wireless-essid'] == 'Coffee WiFi'
 
     def test_str(self):
-        scheme = Scheme('wlan0', 'test')
+        scheme = self.Scheme('wlan0', 'test')
         assert str(scheme) == 'iface wlan0-test inet dhcp\n'
 
-        scheme = Scheme('wlan0', 'test', {
+        scheme = self.Scheme('wlan0', 'test', {
             'wpa-ssid': 'workwifi',
         })
 
         self.assertEqual(str(scheme), 'iface wlan0-test inet dhcp\n    wpa-ssid workwifi\n')
 
     def test_find(self):
-        work = Scheme.find('wlan0', 'work')
+        work = self.Scheme.find('wlan0', 'work')
 
         assert work.options['wpa-ssid'] == 'workwifi'
 
     def test_delete(self):
-        work = Scheme.find('wlan0', 'work')
+        work = self.Scheme.find('wlan0', 'work')
         work.delete()
-        self.assertIsNone(Scheme.find('wlan0', 'work'))
-        assert Scheme.find('wlan0', 'coffee')
+        self.assertIsNone(self.Scheme.find('wlan0', 'work'))
+        assert self.Scheme.find('wlan0', 'coffee')
 
     def test_save(self):
-        scheme = Scheme('wlan0', 'test')
+        scheme = self.Scheme('wlan0', 'test')
         scheme.save()
 
-        assert Scheme.find('wlan0', 'test')
+        assert self.Scheme.find('wlan0', 'test')
