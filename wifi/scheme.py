@@ -106,7 +106,7 @@ class Scheme(object):
         """
         Deletes the configuration from the :attr:`interfaces` file.
         """
-        with open(self.interfaces,'rb+') as f:
+        with open(self.interfaces, 'r+') as f:
             content = f.read()
             f.seek(0,0)
             f.write(content.replace(str(self), ''))
