@@ -37,3 +37,10 @@ def print_table(matrix, sep='  ', file=sys.stdout, *args, **kwargs):
 
     for row in matrix:
         print(format.format(*row).strip(), file=file, *args, **kwargs)
+
+
+def ensure_file_exists(filename):
+    """
+    http://stackoverflow.com/a/12654798/1013960
+    """
+    open(filename, 'a').close()

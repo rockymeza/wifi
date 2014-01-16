@@ -35,12 +35,11 @@ def find_cell(interface, query):
     return cell
 
 
-def scheme_for_ssid(interface, scheme, ssid=None):
+def get_scheme_params(interface, scheme, ssid=None):
     cell = find_cell(interface, ssid or scheme)
-
     passkey = None if not cell.encrypted else input('passkey> ')
 
-    return Scheme.for_cell(interface, scheme, cell, passkey)
+    return interface, scheme, cell, passkey
 
 
 def scan_command(args):
@@ -48,34 +47,36 @@ def scan_command(args):
 
 
 def list_command(args):
-    for scheme in Scheme.all():
+    for scheme in Scheme.for_file(args.file).all():
         print(scheme.name)
 
 
 def show_command(args):
-    scheme = scheme_for_ssid(args.interface, args.scheme, args.ssid)
+    scheme = Scheme.for_file(args.file).for_cell(*get_scheme_params(args.interface, args.scheme, args.ssid))
     print(scheme)
 
 
 def add_command(args):
-    assert not Scheme.find(args.interface, args.scheme), "That scheme has already been used"
+    scheme_class = Scheme.for_file(args.file)
+    assert not scheme_class.find(args.interface, args.scheme), "That scheme has already been used"
 
-    scheme = scheme_for_ssid(args.interface, args.scheme, args.ssid)
+    scheme = scheme_class.for_cell(*get_scheme_params(args.interface, args.scheme, args.ssid))
     scheme.save()
 
 
 def connect_command(args):
+    scheme_class = Scheme.for_file(args.file)
     if args.adhoc:
         # ensure that we have the adhoc utility scheme
         try:
-            adhoc_scheme = Scheme(args.interface, 'adhoc')
+            adhoc_scheme = scheme_class(args.interface, 'adhoc')
             adhoc_scheme.save()
         except AssertionError:
             pass
 
-        scheme = scheme_for_ssid(args.interface, 'adhoc', args.scheme)
+        scheme = scheme_class.for_cell(*get_scheme_params(args.interface, 'adhoc', args.scheme, args.file))
     else:
-        scheme = Scheme.find(args.interface, args.scheme)
+        scheme = scheme_class.find(args.interface, args.scheme)
         assert scheme, "Couldn't find a scheme named %r, did you mean to use -a?" % args.scheme
 
     scheme.activate()
@@ -86,6 +87,10 @@ parser.add_argument('-i',
                     '--interface',
                     default='wlan0',
                     help="Specifies which interface to use (wlan0, eth0, etc.)")
+parser.add_argument('-f',
+                    '--file',
+                    default='/etc/network/interfaces',
+                    help="Specifies which file for scheme storage.")
 
 subparsers = parser.add_subparsers(title='commands')
 
@@ -125,7 +130,8 @@ parser_connect.add_argument('-a',
 parser_connect.set_defaults(func=connect_command)
 
 
-parser_connect.options = [scheme.name for scheme in Scheme.all()]
+# TODO: how to specify the correct interfaces file to work off of.
+parser_connect.get_options = lambda: [scheme.name for scheme in Scheme.all()]
 
 
 def autocomplete(position, wordlist):
@@ -134,7 +140,7 @@ def autocomplete(position, wordlist):
     else:
         try:
             prev = wordlist[position - 1]
-            ret = subparsers.choices[prev].options
+            ret = subparsers.choices[prev].get_options()
         except (IndexError, KeyError, AttributeError):
             ret = []
 
