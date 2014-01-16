@@ -74,7 +74,7 @@ class TestSchemes(TestCase):
     def test_delete(self):
         work = Scheme.find('wlan0', 'work')
         work.delete()
-        assert Scheme.find('wlan0', 'work') == None
+        self.assertIsNone(Scheme.find('wlan0', 'work'))
 
     def test_save(self):
         scheme = Scheme('wlan0', 'test')
