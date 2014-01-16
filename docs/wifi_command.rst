@@ -132,6 +132,14 @@ Connects to the network corresponding to SCHEME. ::
     optional arguments:
       -a, --ad-hoc  Connect to a network without storing it in the config file
 
+autoconnect
+-----------
+
+Searches for saved schemes that are currently available and connects to the
+first one it finds. ::
+
+    usage: wifi autoconnect
+
 
 Completion
 ^^^^^^^^^^
