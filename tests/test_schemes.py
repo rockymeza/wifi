@@ -1,5 +1,6 @@
 from unittest import TestCase
 import tempfile
+import os
 
 from wifi.scheme import extract_schemes, Scheme
 
@@ -17,8 +18,8 @@ allow-hotplug eth0
 iface eth0 inet dhcp
 
 iface wlan0-work inet dhcp
+    wpa-psk 1111111111111111111111111111111111111111111111111111111111111111
     wpa-ssid workwifi
-    wpa-psk  1111111111111111111111111111111111111111111111111111111111111111
     wireless-channel auto
 
 iface wlan0-coffee inet dhcp
@@ -43,6 +44,9 @@ class TestSchemes(TestCase):
         with open(Scheme.interfaces, 'w') as f:
             f.write(NETWORK_INTERFACES_FILE)
 
+    def tearDown(self):
+        os.remove(Scheme.interfaces)
+
     def test_scheme_extraction(self):
         work, coffee, home, coffee2 = extract_schemes(NETWORK_INTERFACES_FILE)
 
@@ -66,6 +70,11 @@ class TestSchemes(TestCase):
         work = Scheme.find('wlan0', 'work')
 
         assert work.options['wpa-ssid'] == 'workwifi'
+
+    def test_delete(self):
+        work = Scheme.find('wlan0', 'work')
+        work.delete()
+        assert Scheme.find('wlan0', 'work') == None
 
     def test_save(self):
         scheme = Scheme('wlan0', 'test')

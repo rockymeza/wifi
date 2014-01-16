@@ -102,6 +102,15 @@ class Scheme(object):
             f.write('\n')
             f.write(str(self))
 
+    def delete(self):
+        """
+        Deletes the configuration from the :attr:`interfaces` file.
+        """
+        with open(self.interfaces,'rb+') as f:
+            content = f.read()
+            f.seek(0,0)
+            f.write(content.replace(str(self), ''))
+
     @property
     def iface(self):
         return '{0}-{1}'.format(self.interface, self.name)
