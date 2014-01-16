@@ -81,6 +81,20 @@ def connect_command(args):
     scheme.activate()
 
 
+def autoconnect_command(args):
+    ssids = [cell.ssid for cell in Cell.all('wlan0')]
+
+    for scheme in Scheme.all():
+        # TODO: make it easier to get the SSID off of a scheme.
+        ssid = scheme.options.get('wpa-ssid', scheme.options.get('wireless-essid'))
+        if ssid in ssids:
+            sys.stderr.write('Connecting to "%s".\n' % ssid)
+            scheme.activate()
+            break
+    else:
+        assert False, "Couldn't find any schemes that are currently available."
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-i',
                     '--interface',
@@ -126,6 +140,13 @@ parser_connect.set_defaults(func=connect_command)
 
 
 parser_connect.options = [scheme.name for scheme in Scheme.all()]
+
+parser_autoconnect = subparsers.add_parser(
+    'autoconnect',
+    help="Searches for saved schemes that are currently"
+         " available and connects to the first one it finds."
+)
+parser_autoconnect.set_defaults(func=autoconnect_command)
 
 
 def autocomplete(position, wordlist):
