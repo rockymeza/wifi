@@ -18,9 +18,9 @@ allow-hotplug eth0
 iface eth0 inet dhcp
 
 iface wlan0-work inet dhcp
-    wpa-psk 1111111111111111111111111111111111111111111111111111111111111111
     wpa-ssid workwifi
     wireless-channel auto
+    wpa-psk 1111111111111111111111111111111111111111111111111111111111111111
 
 iface wlan0-coffee inet dhcp
     wireless-essid Coffee WiFi
@@ -75,6 +75,7 @@ class TestSchemes(TestCase):
         work = Scheme.find('wlan0', 'work')
         work.delete()
         self.assertIsNone(Scheme.find('wlan0', 'work'))
+        assert Scheme.find('wlan0', 'coffee')
 
     def test_save(self):
         scheme = Scheme('wlan0', 'test')
