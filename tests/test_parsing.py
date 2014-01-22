@@ -28,7 +28,11 @@ class IWListParserTest(TestCase):
         # https://github.com/rockymeza/wifi/issues/12
         cell = Cell.from_string(ALTERNATIVE_OUTPUT)
         self.assertEqual(cell.quality, '78/100')
-        #self.assertEqual(cell.signal, 0)
+        self.assertEqual(cell.signal, 16)
+
+    def test_signal_level_out_of_sixty(self):
+        cell = Cell.from_string(ALTERNATIVE_OUTPUT2)
+        self.assertEqual(cell.signal, 58)
 
     def test_noname_cell(self):
         cell = Cell.from_string(NONAME_WIRELESS_NETWORK)
@@ -135,6 +139,21 @@ ALTERNATIVE_OUTPUT = """Cell 06 - Address: F2:23:DB:A3:3B:A0
                         Pairwise Ciphers (1) : CCMP
                         Authentication Suites (1) : PSK
                     Quality=78/100  Signal level=16/100
+"""
+
+ALTERNATIVE_OUTPUT2 = """Cell 06 - Address: F2:23:DB:A3:3B:A0
+                    ESSID:"Antons iPhone"
+                    Protocol:IEEE 802.11g
+                    Mode:Master
+                    Frequency:2.412 GHz (Channel 1)
+                    Encryption key:on
+                    Bit Rates:54 Mb/s
+                    Extra:rsn_ie=30140100000fac040100000fac040100000fac020c00
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : CCMP
+                        Pairwise Ciphers (1) : CCMP
+                        Authentication Suites (1) : PSK
+                    Quality=78/100  Signal level=35/60
 """
 
 NONAME_WIRELESS_NETWORK = """Cell 01 - Address: A4:56:30:E8:97:F0
