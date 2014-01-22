@@ -102,6 +102,24 @@ class Scheme(object):
             f.write('\n')
             f.write(str(self))
 
+    def delete(self):
+        """
+        Deletes the configuration from the :attr:`interfaces` file.
+        """
+        iface = "iface %s-%s inet dhcp" % (self.interface, self.name)
+        content = ''
+        with open(self.interfaces, 'r') as f:
+            skip = False
+            for line in f:
+                if not line.strip():
+                    skip = False
+                elif line.strip() == iface:
+                    skip = True
+                if not skip:
+                    content += line
+        with open(self.interfaces, 'w') as f:
+            f.write(content)
+
     @property
     def iface(self):
         return '{0}-{1}'.format(self.interface, self.name)
