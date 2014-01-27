@@ -47,14 +47,8 @@ class Cell(object):
 cells_re = re.compile(r'Cell \d+ - ')
 quality_re_dict = {'dBm': re.compile(r'Quality=(\d+/\d+).*Signal level=(-\d+) dBm'),
                    'relative': re.compile(r'Quality=(\d+/\d+).*Signal level=(\d+/\d+)')}
-frequency_re = re.compile(r'([\d\.]+ .Hz).*')
+frequency_re = re.compile(r'([\d\.]+ .Hz).*Channel\s+(\d+).*')
 
-
-scalars = (
-    'address',
-    'channel',
-    'mode',
-)
 
 identity = lambda x: x
 
@@ -73,9 +67,7 @@ def normalize_key(key):
 
 normalize_value = {
     'ssid': lambda v: v.strip('"'),
-    'frequency': lambda v: frequency_re.search(v).group(1),
     'encrypted': lambda v: v == 'on',
-    'channel': int,
     'address': identity,
     'mode': identity,
 }
@@ -132,6 +124,10 @@ def normalize(cell_block):
 
                 if 'WPA2' in value:
                     cell.encryption_type = 'wpa2'
+            if key == 'frequency':
+                frequency, channel = frequency_re.search(value).groups()
+                cell.frequency = frequency
+                cell.channel = int(channel)
             elif key in normalize_value:
                 setattr(cell, key, normalize_value[key](value))
 

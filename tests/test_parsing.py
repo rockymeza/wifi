@@ -38,6 +38,12 @@ class IWListParserTest(TestCase):
         cell = Cell.from_string(NONAME_WIRELESS_NETWORK)
         self.assertEqual(cell.ssid, '')
 
+    def test_no_channel_output(self):
+        # https://github.com/rockymeza/wifi/issues/24
+        cell = Cell.from_string(NO_CHANNEL_OUTPUT)
+        self.assertEqual(cell.channel, 11)
+
+
 
 
 IWLIST_SCAN_NO_ENCRYPTION = """Cell 02 - Address: 38:83:45:CC:58:74
@@ -174,4 +180,19 @@ NONAME_WIRELESS_NETWORK = """Cell 01 - Address: A4:56:30:E8:97:F0
                         Pairwise Ciphers (2) : TKIP CCMP
                         Authentication Suites (1) : PSK
                     Quality=84/100  Signal level=43/100  
+"""
+
+NO_CHANNEL_OUTPUT = """Cell 06 - Address: 
+                    ESSID:
+                    Protocol:IEEE 802.11bgn
+                    Mode:Master
+                    Frequency:2.462 GHz (Channel 11)
+                    Encryption key:on
+                    Bit Rates:144 Mb/s
+                    Extra:rsn_ie=30140100000fac040100000fac040100000fac020c00
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : CCMP
+                        Pairwise Ciphers (1) : CCMP
+                        Authentication Suites (1) : PSK
+                    Quality=93/100  Signal level=10/100 
 """
