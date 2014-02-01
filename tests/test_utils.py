@@ -8,7 +8,7 @@ try:
 except ImportError:  # Python < 3
     from StringIO import StringIO
 
-from wifi.utils import print_table, match
+from wifi.utils import print_table, match, db2dbm
 
 
 print_table_in = [
@@ -39,3 +39,16 @@ class FuzzyMatchTest(TestCase):
         assert match('x', 'foo') == 0
         assert match('hl', 'hello') > 0
         assert match('hel', 'hello') > match('ho', 'hello')
+
+
+class db2dbMTest(TestCase):
+    def test_db2dbm(self):
+        self.assertEqual(db2dbm(-10), -100)
+        self.assertEqual(db2dbm(0), -100)
+        self.assertEqual(db2dbm(1), -99)
+        self.assertEqual(db2dbm(2), -99)
+        self.assertEqual(db2dbm(50), -75)
+        self.assertEqual(db2dbm(99), -50)
+        self.assertEqual(db2dbm(100), -50)
+        self.assertEqual(db2dbm(101), -50)
+        self.assertEqual(db2dbm(200), -50)

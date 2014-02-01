@@ -4,6 +4,7 @@ import re
 import textwrap
 
 import wifi.subprocess_compat as subprocess
+from wifi.utils import db2dbm
 
 
 class Cell(object):
@@ -95,7 +96,7 @@ def normalize(cell_block):
                     cell.quality, signal = match_result.groups()
                     if re_name == 'relative':
                         actual, total = map(int, signal.split('/'))
-                        cell.signal = int((actual / total) * 100)
+                        cell.signal = db2dbm(int((actual / total) * 100))
                     else:
                         cell.signal = int(signal)
                     break

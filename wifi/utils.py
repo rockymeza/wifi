@@ -1,4 +1,4 @@
-from __future__ import print_function, unicode_literals
+from __future__ import print_function, unicode_literals, division
 
 import sys
 
@@ -37,3 +37,12 @@ def print_table(matrix, sep='  ', file=sys.stdout, *args, **kwargs):
 
     for row in matrix:
         print(format.format(*row).strip(), file=file, *args, **kwargs)
+
+
+def db2dbm(quality):
+    """
+    Converts the Radio (Received) Signal Strength Indicator (in db) to a dBm
+    value.  Please see http://stackoverflow.com/a/15798024/1013960
+    """
+    dbm = int((quality / 2) - 100)
+    return min(max(dbm, -100), -50)

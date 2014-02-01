@@ -28,11 +28,11 @@ class IWListParserTest(TestCase):
         # https://github.com/rockymeza/wifi/issues/12
         cell = Cell.from_string(ALTERNATIVE_OUTPUT)
         self.assertEqual(cell.quality, '78/100')
-        self.assertEqual(cell.signal, 16)
+        self.assertEqual(cell.signal, -92)
 
     def test_signal_level_out_of_sixty(self):
         cell = Cell.from_string(ALTERNATIVE_OUTPUT2)
-        self.assertEqual(cell.signal, 58)
+        self.assertEqual(cell.signal, -71)
 
     def test_noname_cell(self):
         cell = Cell.from_string(NONAME_WIRELESS_NETWORK)
