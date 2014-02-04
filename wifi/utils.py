@@ -1,5 +1,6 @@
 from __future__ import print_function, unicode_literals, division
 
+import os
 import sys
 
 
@@ -52,4 +53,5 @@ def ensure_file_exists(filename):
     """
     http://stackoverflow.com/a/12654798/1013960
     """
-    open(filename, 'a').close()
+    if not os.path.exists(filename):
+        open(filename, 'a').close()
