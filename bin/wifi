@@ -6,6 +6,7 @@ import os
 
 from wifi import Cell, Scheme
 from wifi.utils import print_table, match as fuzzy_match
+from wifi.exceptions import ConnectionError
 
 try:  # Python 2.x
     input = raw_input
@@ -79,7 +80,10 @@ def connect_command(args):
         scheme = scheme_class.find(args.interface, args.scheme)
         assert scheme, "Couldn't find a scheme named %r, did you mean to use -a?" % args.scheme
 
-    scheme.activate()
+    try:
+        scheme.activate()
+    except ConnectionError:
+        assert False, "Failed to connect to %s." % scheme.name
 
 
 def autoconnect_command(args):
@@ -90,7 +94,10 @@ def autoconnect_command(args):
         ssid = scheme.options.get('wpa-ssid', scheme.options.get('wireless-essid'))
         if ssid in ssids:
             sys.stderr.write('Connecting to "%s".\n' % ssid)
-            scheme.activate()
+            try:
+                scheme.activate()
+            except ConnectionError:
+                assert False, "Failed to connect to %s." % scheme.name
             break
     else:
         assert False, "Couldn't find any schemes that are currently available."

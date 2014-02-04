@@ -37,7 +37,7 @@ def configuration(cell, passkey=None):
             raise NotImplementedError
 
 
-address_bound_re = re.compile(r'bound to (\d+.\d+.\d+.\d+)')
+bound_ip_re = re.compile(r'^bound to (?P<ip_address>\S+)', flags=re.MULTILINE)
 
 
 class Scheme(object):
@@ -153,20 +153,25 @@ class Scheme(object):
         """
 
         subprocess.check_output(['/sbin/ifdown', self.interface], stderr=subprocess.STDOUT)
-        output = subprocess.check_output(['/sbin/ifup'] + self.as_args(), stderr=subprocess.STDOUT)
+        ifup_output = subprocess.check_output(['/sbin/ifup'] + self.as_args(), stderr=subprocess.STDOUT)
 
-        lines = output.splitlines()
-        address = None
-        for line in lines:
-            if line.startswith('bound to '):
-                match_result = address_bound_re.search(line)
-                if match_result is not None:
-                    address = match_result.groups()[0]
-                    break
-        if address is None:
-            raise ConnectionError
+        return self.parse_ifup_output(ifup_output)
+
+    def parse_ifup_output(self, output):
+        matches = bound_ip_re.search(output)
+        if matches:
+            return Connection(scheme=self, ip_address=matches.group('ip_address'))
         else:
-            return address
+            raise ConnectionError("Failed to connect to %r" % self)
+
+
+class Connection(object):
+    """
+    The connection object returned when connecting to a Scheme.
+    """
+    def __init__(self, scheme, ip_address):
+        self.scheme = scheme
+        self.ip_address = ip_address
 
 
 # TODO: support other interfaces

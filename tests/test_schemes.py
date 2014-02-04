@@ -3,6 +3,7 @@ import tempfile
 import os
 
 from wifi.scheme import extract_schemes, Scheme
+from wifi.exceptions import ConnectionError
 
 
 NETWORK_INTERFACES_FILE = """
@@ -84,3 +85,60 @@ class TestSchemes(TestCase):
         scheme.save()
 
         assert self.Scheme.find('wlan0', 'test')
+
+
+class TestActivation(TestCase):
+    def test_successful_connection(self):
+        scheme = Scheme('wlan0', 'test')
+        connection = scheme.parse_ifup_output(SUCCESSFUL_IFUP_OUTPUT)
+        self.assertEqual(connection.scheme, scheme)
+        self.assertEqual(connection.ip_address, '192.168.1.113')
+
+    def test_failed_connection(self):
+        scheme = Scheme('wlan0', 'test')
+        self.assertRaises(ConnectionError, scheme.parse_ifup_output, FAILED_IFUP_OUTPUT)
+
+
+SUCCESSFUL_IFDOWN_OUTPUT = """Internet Systems Consortium DHCP Client 4.2.4
+Copyright 2004-2012 Internet Systems Consortium.
+All rights reserved.
+For info, please visit https://www.isc.org/software/dhcp/
+
+Listening on LPF/wlan0/9c:4e:36:5d:2c:64
+Sending on   LPF/wlan0/9c:4e:36:5d:2c:64
+Sending on   Socket/fallback
+DHCPRELEASE on wlan0 to 192.168.1.1 port 67
+"""
+
+SUCCESSFUL_IFUP_OUTPUT = """Internet Systems Consortium DHCP Client 4.2.4
+Copyright 2004-2012 Internet Systems Consortium.
+All rights reserved.
+For info, please visit https://www.isc.org/software/dhcp/
+
+Listening on LPF/wlan0/9c:4e:36:5d:2c:64
+Sending on   LPF/wlan0/9c:4e:36:5d:2c:64
+Sending on   Socket/fallback
+DHCPDISCOVER on wlan0 to 255.255.255.255 port 67 interval 4
+DHCPDISCOVER on wlan0 to 255.255.255.255 port 67 interval 8
+DHCPREQUEST on wlan0 to 255.255.255.255 port 67
+DHCPOFFER from 192.168.1.1
+DHCPACK from 192.168.1.1
+bound to 192.168.1.113 -- renewal in 2776 seconds.
+"""
+
+FAILED_IFUP_OUTPUT = """Internet Systems Consortium DHCP Client 4.2.4
+Copyright 2004-2012 Internet Systems Consortium.
+All rights reserved.
+For info, please visit https://www.isc.org/software/dhcp/
+
+Listening on LPF/wlan0/9c:4e:36:5d:2c:64
+Sending on   LPF/wlan0/9c:4e:36:5d:2c:64
+Sending on   Socket/fallback
+DHCPDISCOVER on wlan0 to 255.255.255.255 port 67 interval 5
+DHCPDISCOVER on wlan0 to 255.255.255.255 port 67 interval 8
+DHCPDISCOVER on wlan0 to 255.255.255.255 port 67 interval 18
+DHCPDISCOVER on wlan0 to 255.255.255.255 port 67 interval 18
+DHCPDISCOVER on wlan0 to 255.255.255.255 port 67 interval 12
+No DHCPOFFERS received.
+No working leases in persistent database - sleeping.
+"""
