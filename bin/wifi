@@ -6,7 +6,7 @@ import os
 
 from wifi import Cell, Scheme
 from wifi.utils import print_table, match as fuzzy_match
-from wifi.exceptions import ConnectionError
+from wifi.exceptions import ConnectionError, InterfaceError
 
 try:  # Python 2.x
     input = raw_input
@@ -186,6 +186,6 @@ try:
         autocomplete(int(os.environ['COMP_CWORD']), os.environ['COMP_WORDS'].split())
     else:
         args.func(args)
-except AssertionError as e:
+except (AssertionError, InterfaceError) as e:
     sys.stderr.write("Error: ")
     sys.exit(e.message)
