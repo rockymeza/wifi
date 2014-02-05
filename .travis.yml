@@ -4,6 +4,8 @@ python:
   - "2.7"
   - "3.3"
 # command to install dependencies
+before_install:
+  - sudo apt-get install wireless-tools
 install:
   - sudo python setup.py -q install
 # command to run tests

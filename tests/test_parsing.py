@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from wifi.scan import Cell
+from wifi.exceptions import InterfaceError
 
 
 class IWListParserTest(TestCase):
@@ -44,6 +45,9 @@ class IWListParserTest(TestCase):
         self.assertEqual(cell.channel, 11)
 
 
+class ScanningTest(TestCase):
+    def test_scanning(self):
+        self.assertRaises(InterfaceError, Cell.all, 'fake-interface')
 
 
 IWLIST_SCAN_NO_ENCRYPTION = """Cell 02 - Address: 38:83:45:CC:58:74
