@@ -190,4 +190,4 @@ try:
         args.func(args)
 except (AssertionError, InterfaceError) as e:
     sys.stderr.write("Error: ")
-    sys.exit(e.message)
+    sys.exit(e)
