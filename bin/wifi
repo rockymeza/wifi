@@ -75,7 +75,7 @@ def connect_command(args):
         except AssertionError:
             pass
         except IOError:
-            assert False, "Can't write on {}, do you have required privileges?".format(args.file)
+            assert False, "Can't write on {0}, do you have required privileges?".format(args.file)
 
         scheme = scheme_class.for_cell(*get_scheme_params(args.interface, 'adhoc', args.scheme))
     else:
