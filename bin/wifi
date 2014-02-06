@@ -74,6 +74,8 @@ def connect_command(args):
             adhoc_scheme.save()
         except AssertionError:
             pass
+        except IOError:
+            assert False, "Can't write on {}, do you have required privileges?".format(args.file)
 
         scheme = scheme_class.for_cell(*get_scheme_params(args.interface, 'adhoc', args.scheme))
     else:
