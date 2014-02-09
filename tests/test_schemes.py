@@ -2,6 +2,7 @@ from unittest import TestCase
 import tempfile
 import os
 
+from wifi import Cell
 from wifi.scheme import extract_schemes, Scheme
 from wifi.exceptions import ConnectionError
 
@@ -97,6 +98,62 @@ class TestActivation(TestCase):
     def test_failed_connection(self):
         scheme = Scheme('wlan0', 'test')
         self.assertRaises(ConnectionError, scheme.parse_ifup_output, FAILED_IFUP_OUTPUT)
+
+
+class TestForCell(TestCase):
+    def test_unencrypted(self):
+        cell = Cell()
+        cell.ssid = 'SSID'
+        cell.encrypted = False
+
+        scheme = Scheme.for_cell('wlan0', 'test', cell)
+
+        self.assertEqual(scheme.options, {
+            'wireless-essid': 'SSID',
+            'wireless-channel': 'auto',
+        })
+
+    def test_wep(self):
+        cell = Cell()
+        cell.ssid = 'SSID'
+        cell.encrypted = True
+        cell.encryption_type = 'wep'
+
+        scheme = Scheme.for_cell('wlan0', 'test', cell, 'passkey')
+
+        self.assertEqual(scheme.options, {
+            'wireless-essid': 'SSID',
+            'wireless-key': 'passkey',
+        })
+
+    def test_wpa2(self):
+        cell = Cell()
+        cell.ssid = 'SSID'
+        cell.encrypted = True
+        cell.encryption_type = 'wpa2'
+
+        scheme = Scheme.for_cell('wlan0', 'test', cell, b'passkey')
+
+        self.assertEqual(scheme.options, {
+            'wpa-ssid': 'SSID',
+            'wpa-psk': 'ea1548d4e8850c8d94c5ef9ed6fe483981b64c1436952cb1bf80c08a68cdc763',
+            'wireless-channel': 'auto',
+        })
+
+    def test_wpa(self):
+        cell = Cell()
+        cell.ssid = 'SSID'
+        cell.encrypted = True
+        cell.encryption_type = 'wpa'
+
+        scheme = Scheme.for_cell('wlan0', 'test', cell, 'passkey')
+
+        self.assertEqual(scheme.options, {
+            'wpa-ssid': 'SSID',
+            'wpa-psk': 'ea1548d4e8850c8d94c5ef9ed6fe483981b64c1436952cb1bf80c08a68cdc763',
+            'wireless-channel': 'auto',
+        })
+
 
 
 SUCCESSFUL_IFDOWN_OUTPUT = """Internet Systems Consortium DHCP Client 4.2.4

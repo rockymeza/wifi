@@ -19,7 +19,7 @@ def configuration(cell, passkey=None):
             'wireless-channel': 'auto',
         }
     else:
-        if cell.encryption_type == 'wpa2':
+        if cell.encryption_type.startswith('wpa'):
             if len(passkey) != 64:
                 passkey = pbkdf2_hex(passkey, cell.ssid, 4096, 32)
 

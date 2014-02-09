@@ -25,6 +25,11 @@ class IWListParserTest(TestCase):
         self.assertTrue(cell.encrypted)
         self.assertEqual(cell.encryption_type, 'wpa2')
 
+    def test_wpa1(self):
+        cell = Cell.from_string(IWLIST_SCAN_WPA1)
+        self.assertTrue(cell.encrypted)
+        self.assertEqual(cell.encryption_type, 'wpa')
+
     def test_alternative_iwlist_output(self):
         # https://github.com/rockymeza/wifi/issues/12
         cell = Cell.from_string(ALTERNATIVE_OUTPUT)
@@ -134,6 +139,21 @@ IWLIST_SCAN_WPA2 = """Cell 08 - Address: 00:22:B0:98:5E:77
                     IE: Unknown: DD1A00904C3401050700000000000000000000000000000000000000
                     IE: Unknown: DD050050F20500
                     IE: Unknown: DD750050F204104A00011010440001021041000100103B00010310470010C59BF13CE0C57AA1476C0022B0985E7710210006442D4C696E6B102300074449522D363035102400074449522D3630351042000830303030303030301054000800060050F2040001101100074449522D36303510080002008E
+"""
+
+IWLIST_SCAN_WPA1 = """Cell 01 - Address: 
+                    ESSID:
+                    Protocol:IEEE 802.11bg
+                    Mode:Master
+                    Frequency:2.457 GHz (Channel 10)
+                    Encryption key:on
+                    Bit Rates:54 Mb/s
+                    Extra:wpa_ie=dd160050f20101000050f20201000050f20201000050f202
+                    IE: WPA Version 1
+                        Group Cipher : TKIP
+                        Pairwise Ciphers (1) : TKIP
+                        Authentication Suites (1) : PSK
+                    Quality=100/100  Signal level=74/100  
 """
 
 ALTERNATIVE_OUTPUT = """Cell 06 - Address: F2:23:DB:A3:3B:A0

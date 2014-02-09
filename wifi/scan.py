@@ -132,6 +132,8 @@ def normalize(cell_block):
 
                 if 'WPA2' in value:
                     cell.encryption_type = 'wpa2'
+                elif 'WPA' in value:
+                    cell.encryption_type = 'wpa'
             if key == 'frequency':
                 frequency, channel = frequency_re.search(value).groups()
                 cell.frequency = frequency
