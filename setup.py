@@ -12,7 +12,10 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
-install_requires = ['setuptools']
+install_requires = [
+    'setuptools',
+    'pbkdf2',
+]
 try:
     import argparse
 except:

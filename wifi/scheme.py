@@ -2,7 +2,7 @@ import re
 import itertools
 
 import wifi.subprocess_compat as subprocess
-from wifi.pbkdf2 import pbkdf2_hex
+from pbkdf2 import PBKDF2
 from wifi.utils import ensure_file_exists
 from wifi.exceptions import ConnectionError
 
@@ -21,7 +21,7 @@ def configuration(cell, passkey=None):
     else:
         if cell.encryption_type.startswith('wpa'):
             if len(passkey) != 64:
-                passkey = pbkdf2_hex(passkey, cell.ssid, 4096, 32)
+                passkey = PBKDF2(passkey, cell.ssid, 4096).hexread(32)
 
             return {
                 'wpa-ssid': cell.ssid,
