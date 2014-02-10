@@ -154,6 +154,7 @@ class Scheme(object):
 
         subprocess.check_output(['/sbin/ifdown', self.interface], stderr=subprocess.STDOUT)
         ifup_output = subprocess.check_output(['/sbin/ifup'] + self.as_args(), stderr=subprocess.STDOUT)
+        ifup_output = ifup_output.decode('utf-8')
 
         return self.parse_ifup_output(ifup_output)
 
