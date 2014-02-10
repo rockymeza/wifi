@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.3.1
+-----
+:release-date: 2014-02-10
+
+- Scheme.activate was failing on a TypeError in Python3
+
 0.3.0
 -----
 :release-date: 2014-02-09
