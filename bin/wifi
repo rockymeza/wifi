@@ -105,66 +105,69 @@ def autoconnect_command(args):
         assert False, "Couldn't find any schemes that are currently available."
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-i',
-                    '--interface',
-                    default='wlan0',
-                    help="Specifies which interface to use (wlan0, eth0, etc.)")
-parser.add_argument('-f',
-                    '--file',
-                    default='/etc/network/interfaces',
-                    help="Specifies which file for scheme storage.")
+def arg_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i',
+                        '--interface',
+                        default='wlan0',
+                        help="Specifies which interface to use (wlan0, eth0, etc.)")
+    parser.add_argument('-f',
+                        '--file',
+                        default='/etc/network/interfaces',
+                        help="Specifies which file for scheme storage.")
+    
+    subparsers = parser.add_subparsers(title='commands')
+    
+    parser_scan = subparsers.add_parser('scan', help="Shows a list of available networks.")
+    parser_scan.set_defaults(func=scan_command)
+    
+    parser_list = subparsers.add_parser('list', help="Shows a list of networks already configured.")
+    parser_list.set_defaults(func=list_command)
+    
+    scheme_help = ("A memorable nickname for a wireless network."
+                   "  If SSID is not provided, the network will be guessed using SCHEME.")
+    ssid_help = ("The SSID for the network to which you wish to connect."
+                 "  This is fuzzy matched, so you don't have to be precise.")
+    
+    parser_show = subparsers.add_parser('config',
+                                        help="Prints the configuration to connect to a new network.")
+    parser_show.add_argument('scheme', help=scheme_help, metavar='SCHEME')
+    parser_show.add_argument('ssid', nargs='?', help=ssid_help, metavar='SSID')
+    parser_show.set_defaults(func=show_command)
+    
+    parser_add = subparsers.add_parser('add',
+                                       help="Adds the configuration to connect to a new network.")
+    parser_add.add_argument('scheme', help=scheme_help, metavar='SCHEME')
+    parser_add.add_argument('ssid', nargs='?', help=ssid_help, metavar='SSID')
+    parser_add.set_defaults(func=add_command)
+    
+    parser_connect = subparsers.add_parser('connect',
+                                           help="Connects to the network corresponding to SCHEME")
+    parser_connect.add_argument('scheme',
+                                help="The nickname of the network to which you wish to connect.",
+                                metavar='SCHEME')
+    parser_connect.add_argument('-a',
+                                '--ad-hoc',
+                                dest='adhoc',
+                                action="store_true",
+                                help="Connect to a network without storing it in the config file")
+    parser_connect.set_defaults(func=connect_command)
+    
+    
+    # TODO: how to specify the correct interfaces file to work off of.
+    parser_connect.get_options = lambda: [scheme.name for scheme in Scheme.all()]
 
-subparsers = parser.add_subparsers(title='commands')
+    parser_autoconnect = subparsers.add_parser(
+        'autoconnect',
+        help="Searches for saved schemes that are currently"
+             " available and connects to the first one it finds."
+    )
+    parser_autoconnect.set_defaults(func=autoconnect_command)
 
-parser_scan = subparsers.add_parser('scan', help="Shows a list of available networks.")
-parser_scan.set_defaults(func=scan_command)
-
-parser_list = subparsers.add_parser('list', help="Shows a list of networks already configured.")
-parser_list.set_defaults(func=list_command)
-
-scheme_help = ("A memorable nickname for a wireless network."
-               "  If SSID is not provided, the network will be guessed using SCHEME.")
-ssid_help = ("The SSID for the network to which you wish to connect."
-             "  This is fuzzy matched, so you don't have to be precise.")
-
-parser_show = subparsers.add_parser('config',
-                                    help="Prints the configuration to connect to a new network.")
-parser_show.add_argument('scheme', help=scheme_help, metavar='SCHEME')
-parser_show.add_argument('ssid', nargs='?', help=ssid_help, metavar='SSID')
-parser_show.set_defaults(func=show_command)
-
-parser_add = subparsers.add_parser('add',
-                                   help="Adds the configuration to connect to a new network.")
-parser_add.add_argument('scheme', help=scheme_help, metavar='SCHEME')
-parser_add.add_argument('ssid', nargs='?', help=ssid_help, metavar='SSID')
-parser_add.set_defaults(func=add_command)
-
-parser_connect = subparsers.add_parser('connect',
-                                       help="Connects to the network corresponding to SCHEME")
-parser_connect.add_argument('scheme',
-                            help="The nickname of the network to which you wish to connect.",
-                            metavar='SCHEME')
-parser_connect.add_argument('-a',
-                            '--ad-hoc',
-                            dest='adhoc',
-                            action="store_true",
-                            help="Connect to a network without storing it in the config file")
-parser_connect.set_defaults(func=connect_command)
+    return parser, subparsers
 
 
-# TODO: how to specify the correct interfaces file to work off of.
-parser_connect.get_options = lambda: [scheme.name for scheme in Scheme.all()]
-
-parser_autoconnect = subparsers.add_parser(
-    'autoconnect',
-    help="Searches for saved schemes that are currently"
-         " available and connects to the first one it finds."
-)
-parser_autoconnect.set_defaults(func=autoconnect_command)
-
-
-def autocomplete(position, wordlist):
+def autocomplete(position, wordlist, subparsers):
     if position == 1:
         ret = subparsers.choices.keys()
     else:
@@ -176,18 +179,23 @@ def autocomplete(position, wordlist):
 
     print(' '.join(ret))
 
-if len(sys.argv) == 1:
-    argv = ['scan']
-else:
-    argv = sys.argv[1:]
 
-args = parser.parse_args(argv)
+if __name__ == "__main__":
+    parser, subparsers = arg_parser()
 
-try:
-    if 'WIFI_AUTOCOMPLETE' in os.environ:
-        autocomplete(int(os.environ['COMP_CWORD']), os.environ['COMP_WORDS'].split())
+    if len(sys.argv) == 1:
+        argv = ['scan']
     else:
-        args.func(args)
-except (AssertionError, InterfaceError) as e:
-    sys.stderr.write("Error: ")
-    sys.exit(e)
+        argv = sys.argv[1:]
+
+    args = parser.parse_args(argv)
+
+    try:
+        if 'WIFI_AUTOCOMPLETE' in os.environ:
+            autocomplete(int(os.environ['COMP_CWORD']),
+                         os.environ['COMP_WORDS'].split(), subparsers)
+        else:
+            args.func(args)
+    except (AssertionError, InterfaceError) as e:
+        sys.stderr.write("Error: ")
+        sys.exit(e)
