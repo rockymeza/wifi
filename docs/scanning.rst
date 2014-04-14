@@ -17,6 +17,8 @@ This returns a list of :class:`Cell` objects.  Under the hood, this calls `iwlis
 Each cell object should have the following attributes:
 
 - :attr:`ssid`
+- :attr:`signal`
+- :attr:`quality`
 - :attr:`frequency`
 - :attr:`bitrates`
 - :attr:`encrypted`
