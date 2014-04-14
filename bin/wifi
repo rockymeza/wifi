@@ -19,9 +19,13 @@ def fuzzy_find_cell(interface, query):
 
     matches = Cell.where(interface, match_partial)
 
-    num_matches = len(set(cell.ssid for cell in matches))
-    assert num_matches > 0, "Couldn't find a network that matches '{}'".format(query)
-    assert num_matches < 2, "Found more than one network that matches '{}'".format(query)
+    num_unique_matches = len(set(cell.ssid for cell in matches))
+    assert num_unique_matches > 0, "Couldn't find a network that matches '{}'".format(query)
+    assert num_unique_matches < 2, "Found more than one network that matches '{}'".format(query)
+
+    # Several cells of the same SSID
+    if len(matches) > 1:
+        matches.sort(key=lambda cell: cell.signal)
 
     return matches[0]
 
