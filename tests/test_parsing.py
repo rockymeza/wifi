@@ -53,6 +53,11 @@ class IWListParserTest(TestCase):
         # https://github.com/rockymeza/wifi/issues/42
         cell = Cell.from_string(LIST_INDEX_ERROR)
 
+    def test_frequency_no_channel_output(self):
+        # https://github.com/rockymeza/wifi/issues/39
+        cell = Cell.from_string(FREQUENCY_NO_CHANNEL_OUTPUT)
+        self.assertEqual(cell.channel, 149)
+
 
 class ScanningTest(TestCase):
     def test_scanning(self):
@@ -233,4 +238,27 @@ LIST_INDEX_ERROR = """Cell 04 - Address: 50:06:04:C3:4D:93
                     Quality=94/100  Signal level=-53 dBm  Noise level=-92 dBm
                     Encryption key:off
                     Bit Rates:144 Mb/s
+"""
+
+FREQUENCY_NO_CHANNEL_OUTPUT = """Cell 01 - Address: 58:6D:8F:2B:DA:8E
+                    Channel:149
+                    Frequency:5.745 GHz
+                    Quality=65/70 Signal level=-45 dBm
+                    Encryption key:on
+                    ESSID:"3408TT"
+                    Bit Rates:6 Mb/s; 9 Mb/s; 12 Mb/s; 18 Mb/s; 24 Mb/s
+                    36 Mb/s; 48 Mb/s; 54 Mb/s
+                    Mode:Master
+                    Extra:tsf=0000000edea58e3a
+                    Extra: Last beacon: 140ms ago
+                    IE: Unknown: 0006333430385454
+                    IE: Unknown: 01088C129824B048606C
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : CCMP
+                        Pairwise Ciphers (1) : CCMP
+                        Authentication Suites (1) : PSK
+                    IE: Unknown: 2D1AEE081AFFFF000001000000000000000000000000000000000000
+                    IE: Unknown: 3D16950D0000000000000000000000000000000000000000
+                    IE: Unknown: DD090010180200F02C0000
+                    IE: Unknown: DD180050F2020101800003A4000027A4000042435E0062322F00
 """
