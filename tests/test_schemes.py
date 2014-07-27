@@ -4,7 +4,6 @@ import os
 
 from wifi import Cell
 from wifi.scheme import extract_schemes, Scheme
-from wifi.exceptions import ConnectionError
 
 
 NETWORK_INTERFACES_FILE = """
@@ -88,18 +87,6 @@ class TestSchemes(TestCase):
         assert self.Scheme.find('wlan0', 'test')
 
 
-class TestActivation(TestCase):
-    def test_successful_connection(self):
-        scheme = Scheme('wlan0', 'test')
-        connection = scheme.parse_ifup_output(SUCCESSFUL_IFUP_OUTPUT)
-        self.assertEqual(connection.scheme, scheme)
-        self.assertEqual(connection.ip_address, '192.168.1.113')
-
-    def test_failed_connection(self):
-        scheme = Scheme('wlan0', 'test')
-        self.assertRaises(ConnectionError, scheme.parse_ifup_output, FAILED_IFUP_OUTPUT)
-
-
 class TestForCell(TestCase):
     def test_unencrypted(self):
         cell = Cell()
@@ -153,7 +140,6 @@ class TestForCell(TestCase):
             'wpa-psk': 'ea1548d4e8850c8d94c5ef9ed6fe483981b64c1436952cb1bf80c08a68cdc763',
             'wireless-channel': 'auto',
         })
-
 
 
 SUCCESSFUL_IFDOWN_OUTPUT = """Internet Systems Consortium DHCP Client 4.2.4

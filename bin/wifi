@@ -4,7 +4,7 @@ import argparse
 import sys
 import os
 
-from wifi import Cell, Scheme
+from wifi import Cell, Scheme, Connection
 from wifi.utils import print_table, match as fuzzy_match
 from wifi.exceptions import ConnectionError, InterfaceError
 
@@ -67,6 +67,18 @@ def add_command(args):
 
     scheme = scheme_class.for_cell(*get_scheme_params(args.interface, args.scheme, args.ssid))
     scheme.save()
+
+
+def status_command(args):
+    connection = Connection.current(args.interface)
+    if connection:
+        scheme = connection.scheme
+        print_table([
+            ("scheme:", scheme.name),
+            ("ssid:", scheme.ssid),
+        ])
+    else:
+        print("Not connected")
 
 
 def connect_command(args):
@@ -165,6 +177,9 @@ def arg_parser():
              " available and connects to the first one it finds."
     )
     parser_autoconnect.set_defaults(func=autoconnect_command)
+
+    parser_status = subparsers.add_parser('status', help="Show information about the currently active network.")
+    parser_status.set_defaults(func=status_command)
 
     return parser, subparsers
 

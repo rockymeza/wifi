@@ -58,6 +58,9 @@ Once you have a scheme saved, you can retrieve it using :meth:`Scheme.find`. ::
     You must be root to connect to a network.
     Wifi uses `ifdown` and `ifup` to connect and disconnect.
 
+The activate method on the :class:`Scheme` class returns a :class:`Connection`
+object.
+
 
 .. autoclass:: Cell
     :members:
@@ -66,3 +69,34 @@ Once you have a scheme saved, you can retrieve it using :meth:`Scheme.find`. ::
     :members:
 
     .. attribute:: ssid
+
+.. autoclass:: Connection
+
+    .. attribute:: scheme
+
+        The scheme that represents the current network.
+
+    .. attribute:: ipv4
+
+        The IPv4 Address for the connection.  This may be None.
+
+    .. attribute:: ipv6
+
+        The IPv6 Address for the connection.  This may be None.
+
+    .. classmethod:: current
+
+        Returns a connection object based on the currently activated
+        :class:`Scheme`.  This method may return None. ::
+
+            >>> from wifi import Scheme, Connection
+            >>> scheme = Scheme.find('wlan0', 'home')
+            >>> scheme.activate()
+            >>> c = Connection.current('wlan0')
+            >>> c.scheme == scheme
+            True
+
+        .. note::
+
+            It is possible for this method to incorrectly guess which scheme is
+            being selected if there is more than one scheme for the same SSID.

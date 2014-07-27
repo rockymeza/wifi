@@ -140,6 +140,13 @@ first one it finds. ::
 
     usage: wifi autoconnect
 
+status
+------
+
+Shows information about the currently active network. ::
+
+    usage: wifi status
+
 
 Completion
 ^^^^^^^^^^

@@ -15,6 +15,7 @@ def read(fname):
 install_requires = [
     'setuptools',
     'pbkdf2',
+    'netifaces',
 ]
 try:
     import argparse

@@ -37,9 +37,6 @@ def configuration(cell, passkey=None):
             raise NotImplementedError
 
 
-bound_ip_re = re.compile(r'^bound to (?P<ip_address>\S+)', flags=re.MULTILINE)
-
-
 class Scheme(object):
     """
     Saved configuration for connecting to a wireless network.  This
@@ -169,28 +166,16 @@ class Scheme(object):
         """
         Connects to the network as configured in this scheme.
         """
+        from .connection import Connection
 
         subprocess.check_output(['/sbin/ifdown', self.interface], stderr=subprocess.STDOUT)
-        ifup_output = subprocess.check_output(['/sbin/ifup'] + self.as_args(), stderr=subprocess.STDOUT)
-        ifup_output = ifup_output.decode('utf-8')
+        subprocess.check_output(['/sbin/ifup'] + self.as_args(), stderr=subprocess.STDOUT)
 
-        return self.parse_ifup_output(ifup_output)
-
-    def parse_ifup_output(self, output):
-        matches = bound_ip_re.search(output)
-        if matches:
-            return Connection(scheme=self, ip_address=matches.group('ip_address'))
-        else:
+        connection = Connection.current_for_scheme(self)
+        if not connection:
             raise ConnectionError("Failed to connect to %r" % self)
-
-
-class Connection(object):
-    """
-    The connection object returned when connecting to a Scheme.
-    """
-    def __init__(self, scheme, ip_address):
-        self.scheme = scheme
-        self.ip_address = ip_address
+        else:
+            return connection
 
 
 # TODO: support other interfaces
