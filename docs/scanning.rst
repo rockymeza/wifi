@@ -64,3 +64,5 @@ Once you have a scheme saved, you can retrieve it using :meth:`Scheme.find`. ::
 
 .. autoclass:: Scheme
     :members:
+
+    .. attribute:: ssid

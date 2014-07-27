@@ -109,6 +109,10 @@ class Scheme(object):
         """
         return cls(interface, name, configuration(cell, passkey))
 
+    @property
+    def ssid(self):
+        return self.options.get('wpa-ssid', self.options.get('wireless-essid'))
+
     def save(self):
         """
         Writes the configuration to the :attr:`interfaces` file.

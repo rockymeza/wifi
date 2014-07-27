@@ -96,10 +96,8 @@ def autoconnect_command(args):
     ssids = [cell.ssid for cell in Cell.all(args.interface)]
 
     for scheme in Scheme.all():
-        # TODO: make it easier to get the SSID off of a scheme.
-        ssid = scheme.options.get('wpa-ssid', scheme.options.get('wireless-essid'))
-        if ssid in ssids:
-            sys.stderr.write('Connecting to "%s".\n' % ssid)
+        if scheme.ssid in ssids:
+            sys.stderr.write('Connecting to "%s".\n' % scheme.ssid)
             try:
                 scheme.activate()
             except ConnectionError:
