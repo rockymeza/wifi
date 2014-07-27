@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.3.2
+-----
+:release-date: 2014-07-26
+
+- Only run if __name__ == '__main__' (#29 - thanks Jonwei)
+- Try to connect to the nearest Access Point
+- wifi scan was failing when Bit Rate was the last line of output (#42 - thanks jargij)
+- Added documentation for signal and quality on Cell
+
 0.3.1
 -----
 :release-date: 2014-02-10
