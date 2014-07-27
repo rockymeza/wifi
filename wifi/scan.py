@@ -113,8 +113,9 @@ def normalize(cell_block):
 
             # consume next line of bit rates, because they are split on
             # different lines, sometimes...
-            while lines[0].startswith(' ' * 10):
-                values += lines.pop(0).strip().split('; ')
+            if lines:
+                while lines[0].startswith(' ' * 10):
+                    values += lines.pop(0).strip().split('; ')
 
             cell.bitrates.extend(values)
         elif ':' in line:
