@@ -49,6 +49,10 @@ class IWListParserTest(TestCase):
         cell = Cell.from_string(NO_CHANNEL_OUTPUT)
         self.assertEqual(cell.channel, 11)
 
+    def test_list_index_error(self):
+        # https://github.com/rockymeza/wifi/issues/42
+        cell = Cell.from_string(LIST_INDEX_ERROR)
+
 
 class ScanningTest(TestCase):
     def test_scanning(self):
@@ -219,4 +223,14 @@ NO_CHANNEL_OUTPUT = """Cell 06 - Address:
                         Pairwise Ciphers (1) : CCMP
                         Authentication Suites (1) : PSK
                     Quality=93/100  Signal level=10/100 
+"""
+
+LIST_INDEX_ERROR = """Cell 04 - Address: 50:06:04:C3:4D:93
+                    Protocol:11g/n BW20
+                    ESSID:""
+                    Mode:Managed
+                    Frequency:2.412 GHz (Channel 1)
+                    Quality=94/100  Signal level=-53 dBm  Noise level=-92 dBm
+                    Encryption key:off
+                    Bit Rates:144 Mb/s
 """
