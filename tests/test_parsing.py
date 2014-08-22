@@ -58,6 +58,12 @@ class IWListParserTest(TestCase):
         cell = Cell.from_string(FREQUENCY_NO_CHANNEL_OUTPUT)
         self.assertEqual(cell.channel, 149)
 
+    def test_absolute_quality(self):
+        # https://github.com/rockymeza/wifi/pull/45
+        cell = Cell.from_string(ABSOLUTE_QUALITY)
+        self.assertEqual(cell.quality, '38/100')
+        self.assertEqual(cell.signal, -92)
+
 
 class ScanningTest(TestCase):
     def test_scanning(self):
@@ -261,4 +267,14 @@ FREQUENCY_NO_CHANNEL_OUTPUT = """Cell 01 - Address: 58:6D:8F:2B:DA:8E
                     IE: Unknown: 3D16950D0000000000000000000000000000000000000000
                     IE: Unknown: DD090010180200F02C0000
                     IE: Unknown: DD180050F2020101800003A4000027A4000042435E0062322F00
+"""
+
+ABSOLUTE_QUALITY = """Cell 04 - Address: 50:06:04:C3:4D:93
+                    Protocol:11g/n BW20
+                    ESSID:""
+                    Mode:Managed
+                    Frequency:2.412 GHz (Channel 1)
+                    Quality:38 Signal level:16 Noise level:0
+                    Encryption key:off
+                    Bit Rates:144 Mb/s
 """
