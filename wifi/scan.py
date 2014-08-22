@@ -54,7 +54,8 @@ class Cell(object):
 
 cells_re = re.compile(r'Cell \d+ - ')
 quality_re_dict = {'dBm': re.compile(r'Quality=(\d+/\d+).*Signal level=(-\d+) dBm'),
-                   'relative': re.compile(r'Quality=(\d+/\d+).*Signal level=(\d+/\d+)')}
+                   'relative': re.compile(r'Quality=(\d+/\d+).*Signal level=(\d+/\d+)'),
+                   'absolute': re.compile(r'Quality:(\d+).*Signal level:(\d+)')}
 frequency_re = re.compile(r'^(?P<frequency>[\d\.]+ .Hz)(?:[\s\(]+Channel\s+(?P<channel>\d+)[\s\)]+)?$')
 
 
@@ -105,6 +106,9 @@ def normalize(cell_block):
                     if re_name == 'relative':
                         actual, total = map(int, signal.split('/'))
                         cell.signal = db2dbm(int((actual / total) * 100))
+                    elif re_name == 'absolute':
+                        cell.quality = cell.quality + '/100'
+                        cell.signal = db2dbm(int(signal))
                     else:
                         cell.signal = int(signal)
                     break
