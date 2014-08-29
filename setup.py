@@ -23,6 +23,16 @@ except:
 
 version = '0.3.2'
 
+data_files = [
+    ('/etc/bash_completion.d/', ['extras/wifi-completion.bash']),
+]
+for entry in data_files:
+    # make sure we actually have write access to the target folder and if not don't
+    # include it in data_files
+    if not os.access(entry[0], os.W_OK):
+        print("Skipping copying files to %s, no write access" % entry[0])
+        data_files.remove(entry)
+
 setup(
     name='wifi',
     version=version,
@@ -46,7 +56,5 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.3",
     ],
-    data_files=[
-        ('/etc/bash_completion.d/', ['extras/wifi-completion.bash']),
-    ]
+    data_files=data_files
 )
