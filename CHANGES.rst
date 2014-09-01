@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.3.3
+^^^^^
+:release-date: 2014-08-31
+
+- Check for write access for bashcompletion via os.access (#41, #47 - thanks foosel and jegger)
+- Fixed scanning when quality is reported absolutely (#45 - jeromelebel)
+- Fixed channel parsing (#33, #39 - thanks gavinwahl and qizha)
+
 0.3.2
 ^^^^^
 :release-date: 2014-07-26
