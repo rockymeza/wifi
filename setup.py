@@ -39,7 +39,7 @@ setup(
     author='Rocky Meza, Gavin Wahl',
     author_email='rockymeza@gmail.com',
     description=__doc__,
-    long_description=read('README.rst'),
+    long_description='\n\n'.join([read('README.rst'), read('CHANGES.rst')]),
     packages=['wifi'],
     scripts=['bin/wifi'],
     test_suite='tests',
