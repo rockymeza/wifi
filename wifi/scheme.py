@@ -169,10 +169,11 @@ class Scheme(object):
         from .connection import Connection
 
         subprocess.check_output(['/sbin/ifdown', self.interface], stderr=subprocess.STDOUT)
-        subprocess.check_output(['/sbin/ifup'] + self.as_args(), stderr=subprocess.STDOUT)
+        output = subprocess.check_output(['/sbin/ifup'] + self.as_args(), stderr=subprocess.PIPE)
 
         connection = Connection.current_for_scheme(self)
         if not connection:
+            print(output)
             raise ConnectionError("Failed to connect to %r" % self)
         else:
             return connection

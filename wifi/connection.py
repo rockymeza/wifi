@@ -8,12 +8,12 @@ def get_ip_address_for_interface(interface):
     ipv4_list = ip_addresses.get(netifaces.AF_INET)
     try:
         ipv4 = ipv4_list[0]['addr']
-    except (IndexError, KeyError):
+    except (IndexError, KeyError, TypeError):
         ipv4 = None
     ipv6_list = ip_addresses.get(netifaces.AF_INET6)
     try:
         ipv6 = ipv6_list[0]['addr']
-    except (IndexError, KeyError):
+    except (IndexError, KeyError, TypeError):
         ipv6 = None
 
     return ipv4, ipv6
