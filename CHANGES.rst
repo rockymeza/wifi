@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.3.4
+^^^^^
+:release-date: 2014-09-02
+
+- Fixed installation missing some files (#48 - thanks luckydonald)
+
 0.3.3
 ^^^^^
 :release-date: 2014-08-31
