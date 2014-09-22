@@ -2,10 +2,29 @@ from __future__ import division
 
 import re
 import textwrap
+import contextlib
 
 import wifi.subprocess_compat as subprocess
 from wifi.utils import db2dbm
 from wifi.exceptions import InterfaceError
+
+
+@contextlib.contextmanager
+def ensure_interface_up(interface):
+    """
+    If you don't run this command before trying to scan, you will get an error
+    message like:
+
+        Interface doesn't support scanning : Network is down
+
+    This turns the interface on without trying to associate it to anything.
+    """
+    try:
+        subprocess.check_call(['/sbin/ip', 'link', 'set', 'dev', interface, 'up'])
+    except subprocess.CalledProcessError as e:
+        raise InterfaceError(e.output.strip())
+    else:
+        yield
 
 
 class Cell(object):
@@ -25,8 +44,9 @@ class Cell(object):
         Returns a list of all cells extracted from the output of iwlist.
         """
         try:
-            iwlist_scan = subprocess.check_output(['/sbin/iwlist', interface, 'scan'],
-                                                  stderr=subprocess.STDOUT)
+            with ensure_interface_up(interface):
+                iwlist_scan = subprocess.check_output(['/sbin/iwlist', interface, 'scan'],
+                                                      stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             raise InterfaceError(e.output.strip())
         else:
