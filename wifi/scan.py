@@ -126,9 +126,9 @@ def normalize(cell_block):
         elif line.startswith('    Authentication Suites'):
             key , value = split_on_colon(line)
             if value == '802.1x' and cell.encryption_type == 'wpa2':
-                cell.encryption_type = 'wpa2-entreprise'
+                cell.encryption_type = 'wpa2-enterprise'
             elif value == '802.1x' and cell.encryption_type == 'wpa':
-                cell.encryption_type = 'wpa-entreprise'
+                cell.encryption_type = 'wpa-enterprise'
 
         elif ':' in line:
             key, value = split_on_colon(line)
@@ -143,10 +143,12 @@ def normalize(cell_block):
                 while lines and lines[0].startswith(' ' * 4):
                     values.append(lines.pop(0).strip())
 
-                if 'WPA2' in value:
+                if 'WPA2' in value and not hasattr(cell, 'encryption_type'):
                     cell.encryption_type = 'wpa2'
-                elif 'WPA' in value:
+                elif 'WPA' in value and not hasattr(cell, 'encryption_type'):
                     cell.encryption_type = 'wpa'
+                elif 'WPA' in value and cell.encryption_type == 'wpa2' or 'WPA2' in value and cell.encryption_type == 'wpa':
+                    cell.encryption_type = 'wpa/wpa2'
                 
             if key == 'frequency':
                 matches = frequency_re.search(value)
