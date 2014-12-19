@@ -93,11 +93,11 @@ def normalize(cell_block):
     # The cell blocks come in with every line except the first indented at
     # least 20 spaces.  This removes the first 20 spaces off of those lines.
     lines = textwrap.dedent(' ' * 20 + cell_block).splitlines()
+
     cell = Cell()
 
-    while lines:
-        line = lines.pop(0)
-
+    for line in lines:
+        
         if line.startswith('Quality'):
             for re_name, quality_re in quality_re_dict.items():
                 match_result = quality_re.search(line)
@@ -123,6 +123,13 @@ def normalize(cell_block):
                     values += lines.pop(0).strip().split('; ')
 
             cell.bitrates.extend(values)
+        elif line.startswith('    Authentication Suites'):
+            key , value = split_on_colon(line)
+            if value == '802.1x' and cell.encryption_type == 'wpa2':
+                cell.encryption_type = 'wpa2-entreprise'
+            elif value == '802.1x' and cell.encryption_type == 'wpa':
+                cell.encryption_type = 'wpa-entreprise'
+
         elif ':' in line:
             key, value = split_on_colon(line)
             key = normalize_key(key)
@@ -140,6 +147,7 @@ def normalize(cell_block):
                     cell.encryption_type = 'wpa2'
                 elif 'WPA' in value:
                     cell.encryption_type = 'wpa'
+                
             if key == 'frequency':
                 matches = frequency_re.search(value)
                 cell.frequency = matches.group('frequency')
