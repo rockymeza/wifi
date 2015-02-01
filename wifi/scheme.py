@@ -193,7 +193,7 @@ class Connection(object):
 
 
 # TODO: support other interfaces
-scheme_re = re.compile(r'iface\s+(?P<interface>wlan\d?)(?:-(?P<name>\w+))?')
+scheme_re = re.compile(r'iface\s+(?P<interface>wlan\d?)(?:-(?P<name>\S+))?')
 
 
 def extract_schemes(interfaces, scheme_class=Scheme):
