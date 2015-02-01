@@ -192,8 +192,7 @@ class Connection(object):
         self.ip_address = ip_address
 
 
-# TODO: support other interfaces
-scheme_re = re.compile(r'iface\s+(?P<interface>wlan\d?)(?:-(?P<name>\S+))?')
+scheme_re = re.compile(r'iface\s+(?P<interface>[^-]+)(?:-(?P<name>\S+))?')
 
 
 def extract_schemes(interfaces, scheme_class=Scheme):

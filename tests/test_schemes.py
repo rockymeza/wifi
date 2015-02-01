@@ -40,6 +40,10 @@ iface wlan0-coffee2 inet dhcp
 iface wlan0-with-hyphen inet dhcp
     wireless-channel auto
     wireless-essid with-hyphen
+
+iface xyz1-scheme inet dhcp
+    wireless-channel auto
+    wireless-essid scheme
 """
 
 
@@ -67,6 +71,9 @@ class TestSchemes(TestCase):
     def test_with_hyphen(self):
         with_hyphen = self.Scheme.find('wlan0', 'with-hyphen')
         assert with_hyphen.options['wireless-essid'] == 'with-hyphen'
+
+    def test_with_different_interface(self):
+        assert self.Scheme.find('xyz1', 'scheme')
 
     def test_str(self):
         scheme = self.Scheme('wlan0', 'test')
