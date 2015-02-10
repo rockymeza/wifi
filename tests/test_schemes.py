@@ -113,18 +113,37 @@ class TestForCell(TestCase):
             'wireless-channel': 'auto',
         })
 
-    def test_wep(self):
+    def test_wep_hex(self):
         cell = Cell()
         cell.ssid = 'SSID'
         cell.encrypted = True
         cell.encryption_type = 'wep'
 
-        scheme = Scheme.for_cell('wlan0', 'test', cell, 'passkey')
+        # hex key lengths: 10, 26, 32, 58
+        hex_keys = ("01234567ab", "0123456789abc" * 2, "0123456789abcdef" * 2, "0123456789abc" * 2 + "0123456789abcdef" * 2)
+        for key in hex_keys:
+            scheme = Scheme.for_cell('wlan0', 'test', cell, key)
 
-        self.assertEqual(scheme.options, {
-            'wireless-essid': 'SSID',
-            'wireless-key': 'passkey',
-        })
+            self.assertEqual(scheme.options, {
+                'wireless-essid': 'SSID',
+                'wireless-key': key
+            })
+
+    def test_wep_ascii(self):
+        cell = Cell()
+        cell.ssid = 'SSID'
+        cell.encrypted = True
+        cell.encryption_type = 'wep'
+
+        # ascii key lengths: 5, 13, 16, 29
+        ascii_keys = ('a' * 5, 'a' * 13, 'a' * 16, 'a' * 29)
+        for key in ascii_keys:
+            scheme = Scheme.for_cell('wlan0', 'test', cell, key)
+
+            self.assertEqual(scheme.options, {
+                'wireless-essid': 'SSID',
+                'wireless-key': 's:' + key
+            })
 
     def test_wpa2(self):
         cell = Cell()

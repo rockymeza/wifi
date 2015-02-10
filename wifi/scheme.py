@@ -29,6 +29,23 @@ def configuration(cell, passkey=None):
                 'wireless-channel': 'auto',
             }
         elif cell.encryption_type == 'wep':
+            # Pass key lengths in bytes for WEP depend on type of key and key length:
+            #
+            #       64bit   128bit   152bit   256bit
+            # hex     10      26       32       58
+            # ASCII    5      13       16       29
+            #
+            # (source: https://en.wikipedia.org/wiki/Wired_Equivalent_Privacy)
+            #
+            # ASCII keys need to be prefixed with an s: in the interfaces file in order to work with linux' wireless
+            # tools
+
+            ascii_lengths = (5, 13, 16, 29)
+            if len(passkey) in ascii_lengths:
+                # we got an ASCII passkey here (otherwise the key length wouldn't match), we'll need to prefix that
+                # with s: in our config for the wireless tools to pick it up properly
+                passkey = "s:" + passkey
+
             return {
                 'wireless-essid': cell.ssid,
                 'wireless-key': passkey,
