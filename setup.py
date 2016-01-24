@@ -21,7 +21,7 @@ try:
 except:
     install_requires.append('argparse')
 
-version = '0.3.4'
+version = '0.3.5'
 
 data_files = [
     ('/etc/bash_completion.d/', ['extras/wifi-completion.bash']),
