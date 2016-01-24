@@ -64,6 +64,11 @@ class IWListParserTest(TestCase):
         self.assertEqual(cell.quality, '38/100')
         self.assertEqual(cell.signal, -92)
 
+    def test_blank_ssid(self):
+        # https://github.com/rockymeza/wifi/issues/86
+        cell = Cell.from_string(NO_SSID_AT_ALL)
+        self.assertEqual(cell.ssid, None)
+
 
 class ScanningTest(TestCase):
     def test_scanning(self):
@@ -277,4 +282,28 @@ ABSOLUTE_QUALITY = """Cell 04 - Address: 50:06:04:C3:4D:93
                     Quality:38 Signal level:16 Noise level:0
                     Encryption key:off
                     Bit Rates:144 Mb/s
+"""
+
+NO_SSID_AT_ALL = """Cell 10 - Address: 02:CA:FE:CA:CA:40
+                    Channel:5
+                    Frequency:2.432 GHz (Channel 5)
+                    Quality=61/70  Signal level=-49 dBm  
+                    Encryption key:on
+                    Bit Rates:1 Mb/s; 2 Mb/s; 5.5 Mb/s; 11 Mb/s; 6 Mb/s
+                              9 Mb/s; 12 Mb/s; 18 Mb/s
+                    Bit Rates:24 Mb/s; 36 Mb/s; 48 Mb/s; 54 Mb/s
+                    Mode:Ad-Hoc
+                    Extra:tsf=000002744a259753
+                    Extra: Last beacon: 76ms ago
+                    IE: Unknown: 010882040B160C121824
+                    IE: Unknown: 030105
+                    IE: Unknown: 06020000
+                    IE: Unknown: 32043048606C
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : CCMP
+                        Pairwise Ciphers (1) : CCMP
+                        Authentication Suites (1) : PSK
+                    IE: Unknown: 2D1ACE111BFF00000000000000000000000100000000000000000000
+                    IE: Unknown: 3D16050000000000FF000000000000000000000000000000
+                    IE: Unknown: DD070050F202000100
 """
