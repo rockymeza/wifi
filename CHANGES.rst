@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.3.5
+^^^^^
+:release-date: 2016-01-24
+
+- Better password handling (#62 - thanks foosel)
+- Account for Cells with no SSID (#86 - thanks tlau)
+
 0.3.4
 ^^^^^
 :release-date: 2014-09-02
