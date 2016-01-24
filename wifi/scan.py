@@ -14,6 +14,7 @@ class Cell(object):
     """
 
     def __init__(self):
+        self.ssid = None
         self.bitrates = []
 
     def __repr__(self):
