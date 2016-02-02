@@ -24,6 +24,21 @@ class IWListParserTest(TestCase):
         cell = Cell.from_string(IWLIST_SCAN_WPA2)
         self.assertTrue(cell.encrypted)
         self.assertEqual(cell.encryption_type, 'wpa2')
+        
+    def test_wpa_wpa2(self):
+        cell = Cell.from_string(IWLIST_SCAN_WPA_WPA2)
+        self.assertTrue(cell.encrypted)
+        self.assertEqual(cell.encryption_type, 'wpa/wpa2')
+
+    def test_wpa2_enterprise(self):
+        cell = Cell.from_string(IWLIST_SCAN_WPA2_ENTERPRISE)
+        self.assertTrue(cell.encrypted)
+        self.assertEqual(cell.encryption_type, 'wpa2-enterprise')
+
+    def test_wpa_enterprise(self):
+        cell = Cell.from_string(IWLIST_SCAN_WPA_ENTERPRISE)
+        self.assertTrue(cell.encrypted)
+        self.assertEqual(cell.encryption_type, 'wpa-enterprise')
 
     def test_wpa1(self):
         cell = Cell.from_string(IWLIST_SCAN_WPA1)
@@ -151,6 +166,24 @@ IWLIST_SCAN_WPA2_ENTERPRISE = """Cell 04 - Address:
                     Extra:tsf=0000000744e298fd
                     Extra: Last beacon: 10ms ago
                     IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : TKIP
+                        Pairwise Ciphers (2) : CCMP TKIP
+                        Authentication Suites (1) : 802.1x
+"""
+
+IWLIST_SCAN_WPA_ENTERPRISE = """Cell 04 - Address: 
+                    Channel:1
+                    Frequency:2.412 GHz (Channel 1)
+                    Quality=42/70  Signal level=-68 dBm
+                    Encryption key:on
+                    ESSID:"WPA2-Enterprise"
+                    Bit Rates:1 Mb/s; 2 Mb/s; 5.5 Mb/s; 11 Mb/s; 18 Mb/s
+                              24 Mb/s; 36 Mb/s; 54 Mb/s
+                    Bit Rates:6 Mb/s; 9 Mb/s; 12 Mb/s; 48 Mb/s
+                    Mode:Master
+                    Extra:tsf=0000000744e298fd
+                    Extra: Last beacon: 10ms ago
+                    IE: IEEE 802.11i/WPA
                         Group Cipher : TKIP
                         Pairwise Ciphers (2) : CCMP TKIP
                         Authentication Suites (1) : 802.1x
