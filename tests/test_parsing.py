@@ -70,7 +70,7 @@ class ScanningTest(TestCase):
         self.assertRaises(InterfaceError, Cell.all, 'fake-interface')
 
 
-IWLIST_SCAN_NO_ENCRYPTION = """Cell 02 - Address: 38:83:45:CC:58:74
+IWLIST_SCAN_NO_ENCRYPTION = """Cell 02 - Address: 
                     Channel:6
                     Frequency:2.437 GHz (Channel 6)
                     Quality=59/70  Signal level=-51 dBm  
@@ -82,21 +82,9 @@ IWLIST_SCAN_NO_ENCRYPTION = """Cell 02 - Address: 38:83:45:CC:58:74
                     Mode:Master
                     Extra:tsf=00000079fc961317
                     Extra: Last beacon: 60ms ago
-                    IE: Unknown: 001754502D4C494E4B5F506F636B657441505F434335383734
-                    IE: Unknown: 010882848B960C121824
-                    IE: Unknown: 030106
-                    IE: Unknown: 0706555320010D14
-                    IE: Unknown: 2A0100
-                    IE: Unknown: 32043048606C
-                    IE: Unknown: 2D1A6E1003FF00000000000000000000000000000000000000000000
-                    IE: Unknown: 331A6E1003FF00000000000000000000000000000000000000000000
-                    IE: Unknown: 3D1606051100000000000000000000000000000000000000
-                    IE: Unknown: 341606051100000000000000000000000000000000000000
-                    IE: Unknown: DD180050F2020101010003A4000027A4000042435E0062322F00
-                    IE: Unknown: DD0900037F01010000FF7F
 """
 
-IWLIST_SCAN_WEP = """Cell 01 - Address: 00:21:27:35:1B:E8
+IWLIST_SCAN_WEP = """Cell 01 - Address: 
                     Channel:6
                     Frequency:2.437 GHz (Channel 6)
                     Quality=36/70  Signal level=-74 dBm  
@@ -108,36 +96,20 @@ IWLIST_SCAN_WEP = """Cell 01 - Address: 00:21:27:35:1B:E8
                     Mode:Master
                     Extra:tsf=00000022fa7f11cd
                     Extra: Last beacon: 60ms ago
-                    IE: Unknown: 00025348
-                    IE: Unknown: 010882848B960C183048
-                    IE: Unknown: 030106
-                    IE: Unknown: 0706434E20010D14
-                    IE: Unknown: 2A0100
-                    IE: Unknown: 32041224606C
-                    IE: Unknown: DD0900037F01010008FF7F
-                    IE: Unknown: DD1A00037F0301000000002127351BE8022127351BE864002C010808
 """
 
-IWLIST_SCAN_WPA2 = """Cell 08 - Address: 00:22:B0:98:5E:77
+IWLIST_SCAN_WPA_WPA2 = """Cell 08 - Address: 
                     Channel:1
                     Frequency:2.412 GHz (Channel 1)
                     Quality=42/70  Signal level=-68 dBm  
                     Encryption key:on
-                    ESSID:"WPA2 network"
+                    ESSID:"WPA/WPA2 network"
                     Bit Rates:1 Mb/s; 2 Mb/s; 5.5 Mb/s; 11 Mb/s; 9 Mb/s
                               18 Mb/s; 36 Mb/s; 54 Mb/s
                     Bit Rates:6 Mb/s; 12 Mb/s; 24 Mb/s; 48 Mb/s
                     Mode:Master
                     Extra:tsf=000000029170ed29
                     Extra: Last beacon: 24ms ago
-                    IE: Unknown: 00096265616E7472656531
-                    IE: Unknown: 010882848B961224486C
-                    IE: Unknown: 030101
-                    IE: Unknown: 2A0100
-                    IE: Unknown: 32040C183060
-                    IE: Unknown: 2D1A6E1013FFFF0000010000000000000000000000000C0000000000
-                    IE: Unknown: 3D1601050700000000000000000000000000000000000000
-                    IE: Unknown: 3E0100
                     IE: WPA Version 1
                         Group Cipher : TKIP
                         Pairwise Ciphers (1) : TKIP
@@ -146,14 +118,42 @@ IWLIST_SCAN_WPA2 = """Cell 08 - Address: 00:22:B0:98:5E:77
                         Group Cipher : TKIP
                         Pairwise Ciphers (1) : TKIP
                         Authentication Suites (1) : PSK
-                    IE: Unknown: DD180050F2020101000003A4000027A4000042435E0062322F00
-                    IE: Unknown: 7F0101
-                    IE: Unknown: DD07000C4304000000
-                    IE: Unknown: 0706474220010D10
-                    IE: Unknown: DD1E00904C336E1013FFFF0000010000000000000000000000000C0000000000
-                    IE: Unknown: DD1A00904C3401050700000000000000000000000000000000000000
-                    IE: Unknown: DD050050F20500
-                    IE: Unknown: DD750050F204104A00011010440001021041000100103B00010310470010C59BF13CE0C57AA1476C0022B0985E7710210006442D4C696E6B102300074449522D363035102400074449522D3630351042000830303030303030301054000800060050F2040001101100074449522D36303510080002008E
+                    """
+
+IWLIST_SCAN_WPA2 = """Cell 02 - Adress:
+                    Channel:1
+                    Frequency:2.412 GHz (Channel 1)
+                    Quality=70/70  Signal level=-25 dBm
+                    Encryption key:on
+                    ESSID:"WPA2"
+                    Bit Rates:1 Mb/s; 2 Mb/s; 5.5 Mb/s; 11 Mb/s
+                    Bit Rates:6 Mb/s; 9 Mb/s; 12 Mb/s; 18 Mb/s; 24 Mb/s
+                              36 Mb/s; 48 Mb/s; 54 Mb/s
+                    Mode:Master
+                    Extra:tsf=000001a12fade963
+                    Extra: Last beacon: 10ms ago
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : CCMP
+                        Pairwise Ciphers (1) : CCMP
+                        Authentication Suites (1) : PSK
+"""
+
+IWLIST_SCAN_WPA2_ENTERPRISE = """Cell 04 - Address: 
+                    Channel:1
+                    Frequency:2.412 GHz (Channel 1)
+                    Quality=42/70  Signal level=-68 dBm
+                    Encryption key:on
+                    ESSID:"WPA2-Enterprise"
+                    Bit Rates:1 Mb/s; 2 Mb/s; 5.5 Mb/s; 11 Mb/s; 18 Mb/s
+                              24 Mb/s; 36 Mb/s; 54 Mb/s
+                    Bit Rates:6 Mb/s; 9 Mb/s; 12 Mb/s; 48 Mb/s
+                    Mode:Master
+                    Extra:tsf=0000000744e298fd
+                    Extra: Last beacon: 10ms ago
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : TKIP
+                        Pairwise Ciphers (2) : CCMP TKIP
+                        Authentication Suites (1) : 802.1x
 """
 
 IWLIST_SCAN_WPA1 = """Cell 01 - Address: 
