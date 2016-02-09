@@ -16,6 +16,14 @@ class Cell(object):
     def __init__(self):
         self.ssid = None
         self.bitrates = []
+        self.address = None
+        self.channel = None
+        self.encrypted = False
+        self.encryption_type = None
+        self.frequency = None
+        self.mode = None
+        self.quality = None
+        self.signal = None
 
     def __repr__(self):
         return 'Cell(ssid={ssid})'.format(**vars(self))
@@ -151,7 +159,7 @@ def normalize(cell_block):
 
     # It seems that encryption types other than WEP need to specify their
     # existence.
-    if cell.encrypted and not hasattr(cell, 'encryption_type'):
+    if cell.encrypted and not cell.encryption_type):
         cell.encryption_type = 'wep'
 
     return cell
