@@ -159,7 +159,7 @@ def normalize(cell_block):
 
     # It seems that encryption types other than WEP need to specify their
     # existence.
-    if cell.encrypted and not cell.encryption_type):
+    if cell.encrypted and not cell.encryption_type:
         cell.encryption_type = 'wep'
 
     return cell
