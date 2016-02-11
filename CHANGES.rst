@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.3.6
+^^^^^
+:release-date: 2016-02-11
+
+- Set all attributes to None in Cell.__init__ (#88 - thanks stvad)
+
 0.3.5
 ^^^^^
 :release-date: 2016-01-24
