@@ -36,6 +36,14 @@ iface wlan0-home inet dhcp
 iface wlan0-coffee2 inet dhcp
     wireless-essid Coffee 2
     wireless-channel auto
+
+iface wlan0-with-hyphen inet dhcp
+    wireless-channel auto
+    wireless-essid with-hyphen
+
+iface xyz1-scheme inet dhcp
+    wireless-channel auto
+    wireless-essid scheme
 """
 
 
@@ -52,13 +60,20 @@ class TestSchemes(TestCase):
         os.remove(self.Scheme.interfaces)
 
     def test_scheme_extraction(self):
-        work, coffee, home, coffee2 = extract_schemes(NETWORK_INTERFACES_FILE)
+        work, coffee, home, coffee2 = list(extract_schemes(NETWORK_INTERFACES_FILE))[:4]
 
         assert work.name == 'work'
         assert work.options['wpa-ssid'] == 'workwifi'
 
         assert coffee.name == 'coffee'
         assert coffee.options['wireless-essid'] == 'Coffee WiFi'
+
+    def test_with_hyphen(self):
+        with_hyphen = self.Scheme.find('wlan0', 'with-hyphen')
+        assert with_hyphen.options['wireless-essid'] == 'with-hyphen'
+
+    def test_with_different_interface(self):
+        assert self.Scheme.find('xyz1', 'scheme')
 
     def test_str(self):
         scheme = self.Scheme('wlan0', 'test')
