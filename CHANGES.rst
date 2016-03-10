@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.3.7
+^^^^^
+:release-date: 2016-03-11
+
+- Fix bugs related to scheme parsing (#59, #42)
+
 0.3.6
 ^^^^^
 :release-date: 2016-02-11
