@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.3.8
+^^^^^
+:release-date: 2016-03-11
+
+- Parse noise level if available (#91 - thanks zgoda-mobica)
+
 0.3.7
 ^^^^^
 :release-date: 2016-03-11
