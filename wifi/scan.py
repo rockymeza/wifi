@@ -24,6 +24,7 @@ class Cell(object):
         self.mode = None
         self.quality = None
         self.signal = None
+        self.noise = None
 
     def __repr__(self):
         return 'Cell(ssid={ssid})'.format(**vars(self))
@@ -62,9 +63,9 @@ class Cell(object):
 
 
 cells_re = re.compile(r'Cell \d+ - ')
-quality_re_dict = {'dBm': re.compile(r'Quality=(\d+/\d+).*Signal level=(-\d+) dBm'),
-                   'relative': re.compile(r'Quality=(\d+/\d+).*Signal level=(\d+/\d+)'),
-                   'absolute': re.compile(r'Quality:(\d+).*Signal level:(\d+)')}
+quality_re_dict = {'dBm': re.compile(r'Quality[=:](?P<quality>\d+/\d+).*Signal level[=:](?P<siglevel>-\d+) dBm?(.*Noise level[=:](?P<noiselevel>-\d+) dBm)?'),
+                   'relative': re.compile(r'Quality[=:](?P<quality>\d+/\d+).*Signal level[=:](?P<siglevel>\d+/\d+)'),
+                   'absolute': re.compile(r'Quality[=:](?P<quality>\d+).*Signal level[=:](?P<siglevel>\d+)')}
 frequency_re = re.compile(r'^(?P<frequency>[\d\.]+ .Hz)(?:[\s\(]+Channel\s+(?P<channel>\d+)[\s\)]+)?$')
 
 
@@ -111,7 +112,10 @@ def normalize(cell_block):
             for re_name, quality_re in quality_re_dict.items():
                 match_result = quality_re.search(line)
                 if match_result is not None:
-                    cell.quality, signal = match_result.groups()
+                    groups = match_result.groupdict()
+                    cell.quality = groups['quality']
+                    signal = groups['siglevel']
+                    noise = groups.get('noiselevel')
                     if re_name == 'relative':
                         actual, total = map(int, signal.split('/'))
                         cell.signal = db2dbm(int((actual / total) * 100))
@@ -120,6 +124,8 @@ def normalize(cell_block):
                         cell.signal = db2dbm(int(signal))
                     else:
                         cell.signal = int(signal)
+                    if noise is not None:
+                        cell.noise = int(noise)
                     break
 
         elif line.startswith('Bit Rates'):

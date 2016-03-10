@@ -69,6 +69,14 @@ class IWListParserTest(TestCase):
         cell = Cell.from_string(NO_SSID_AT_ALL)
         self.assertEqual(cell.ssid, None)
 
+    def test_noise_no_data(self):
+        cell = Cell.from_string(IWLIST_SCAN_NO_ENCRYPTION)
+        self.assertEqual(cell.noise, None)
+
+    def test_noise_data_present(self):
+        cell = Cell.from_string(LIST_INDEX_ERROR)
+        self.assertEqual(cell.noise, -92)
+
 
 class ScanningTest(TestCase):
     def test_scanning(self):
