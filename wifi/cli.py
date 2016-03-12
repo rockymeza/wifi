@@ -185,12 +185,7 @@ def autocomplete(position, wordlist, subparsers):
 
 def main():
     parser, subparsers = arg_parser()
-
-    if len(sys.argv) == 1:
-        argv = ['scan']
-    else:
-        argv = sys.argv[1:]
-
+    argv = sys.argv[1:]
     args = parser.parse_args(argv)
 
     try:
@@ -198,7 +193,8 @@ def main():
             autocomplete(int(os.environ['COMP_CWORD']),
                          os.environ['COMP_WORDS'].split(), subparsers)
         else:
-            args.func(args)
+            command = getattr(args, 'func', scan_command)
+            command(args)
     except (AssertionError, InterfaceError) as e:
         sys.stderr.write("Error: ")
         sys.exit(e)
