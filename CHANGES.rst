@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.4.0
+^^^^^
+:release-date: unknown
+
+- Make the wifi command name configurable (#55 - thanks yourealwaysbe)
+
 0.3.8
 ^^^^^
 :release-date: 2016-03-11

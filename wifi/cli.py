@@ -183,7 +183,7 @@ def autocomplete(position, wordlist, subparsers):
     print(' '.join(ret))
 
 
-if __name__ == "__main__":
+def main():
     parser, subparsers = arg_parser()
 
     if len(sys.argv) == 1:
