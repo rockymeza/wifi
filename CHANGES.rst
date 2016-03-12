@@ -6,6 +6,7 @@ Changelog
 :release-date: unknown
 
 - Make the wifi command name configurable (#55 - thanks yourealwaysbe)
+- Add a __main__.py so that wifi can be invoked using python -mwifi
 
 0.3.8
 ^^^^^

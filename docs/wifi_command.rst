@@ -33,6 +33,12 @@ You can run the ``scan`` command to do that.
     -86  XXYYYYZZZ                protected
     -87  Made Up Name             protected
 
+.. note::
+
+    The wifi command is also accessible through the python argument as::
+
+        # python -m wifi
+
 The scan command returns three bits of data: the signal quality, the SSID and if the network is protected or not.
 If you want to order the networks by quality, you can pipe the output into sort.
 
