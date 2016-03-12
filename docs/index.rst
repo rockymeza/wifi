@@ -40,6 +40,10 @@ If you only want the Python library and don't care about the CLI, you can also d
 
     $ WIFI_INSTALL_CLI=False pip install wifi
 
+There will be no extra executable installed, but the wifi CLI will still be available using this invocation style::
+
+    $ python -m wifi
+
 
 Documentation
 -------------
