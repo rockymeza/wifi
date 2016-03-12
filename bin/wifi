@@ -119,32 +119,32 @@ def arg_parser():
                         '--file',
                         default='/etc/network/interfaces',
                         help="Specifies which file for scheme storage.")
-    
+
     subparsers = parser.add_subparsers(title='commands')
-    
+
     parser_scan = subparsers.add_parser('scan', help="Shows a list of available networks.")
     parser_scan.set_defaults(func=scan_command)
-    
+
     parser_list = subparsers.add_parser('list', help="Shows a list of networks already configured.")
     parser_list.set_defaults(func=list_command)
-    
+
     scheme_help = ("A memorable nickname for a wireless network."
                    "  If SSID is not provided, the network will be guessed using SCHEME.")
     ssid_help = ("The SSID for the network to which you wish to connect."
                  "  This is fuzzy matched, so you don't have to be precise.")
-    
+
     parser_show = subparsers.add_parser('config',
                                         help="Prints the configuration to connect to a new network.")
     parser_show.add_argument('scheme', help=scheme_help, metavar='SCHEME')
     parser_show.add_argument('ssid', nargs='?', help=ssid_help, metavar='SSID')
     parser_show.set_defaults(func=show_command)
-    
+
     parser_add = subparsers.add_parser('add',
                                        help="Adds the configuration to connect to a new network.")
     parser_add.add_argument('scheme', help=scheme_help, metavar='SCHEME')
     parser_add.add_argument('ssid', nargs='?', help=ssid_help, metavar='SSID')
     parser_add.set_defaults(func=add_command)
-    
+
     parser_connect = subparsers.add_parser('connect',
                                            help="Connects to the network corresponding to SCHEME")
     parser_connect.add_argument('scheme',
@@ -156,8 +156,7 @@ def arg_parser():
                                 action="store_true",
                                 help="Connect to a network without storing it in the config file")
     parser_connect.set_defaults(func=connect_command)
-    
-    
+
     # TODO: how to specify the correct interfaces file to work off of.
     parser_connect.get_options = lambda: [scheme.name for scheme in Scheme.all()]
 
