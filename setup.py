@@ -44,7 +44,7 @@ if should_install_cli:
     ]
     # make sure we actually have write access to the target folder and if not don't
     # include it in data_files
-    if not os.access('/etc/bash_completion.d/', os.W_OK):
+    if os.access('/etc/bash_completion.d/', os.W_OK):
         data_files.append(('/etc/bash_completion.d/', ['extras/wifi-completion.bash']))
     else:
         print("Not installing bash completion because of lack of permissions.")
