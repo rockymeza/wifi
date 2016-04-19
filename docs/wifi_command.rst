@@ -7,7 +7,7 @@ Tutorial
 ^^^^^^^^
 
 This tutorial assumes you are comfortable on the command line.
-(If you aren't, perhaps wifi is not quite the right for you.)
+(If you aren't, perhaps wifi is not quite the right tool for you.)
 
 First, if you haven't already, install wifi.
 
