@@ -42,7 +42,7 @@ Connecting to a network
 In order to connect to a network, you need to set up a scheme for it. ::
 
     >>> cell = Cell.all('wlan0')[0]
-    >>> scheme = Scheme.for_cell('wlan0', 'home', cell)
+    >>> scheme = Scheme.for_cell('wlan0', 'home', cell, passkey)
     >>> scheme.save()
     >>> scheme.activate()
 
