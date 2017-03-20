@@ -1,3 +1,17 @@
+**Note:** This project is unmaintained. While I would love to keep up the
+development on this project, it is difficult for me for several reasons:
+
+1.  I don't have enough time.
+
+2.  I switched to Fedora and the corresponding scripts to manage WiFi are
+    completely different. I was looking into re-writing the library in order to
+    support more than just Debian based architectures, but it was too involved.
+
+If anybody wants to take over the development of WiFi, please contact me. You
+can find my email in the commit message.
+
+----
+
 wifi
 ----
 

@@ -1,6 +1,11 @@
 wifi, a Python interface
 ========================
 
+**Note:** This project is unmaintained. For more information, please visit the
+GitHub page.
+
+----
+
 Wifi provides a set of tools for configuring and connecting to WiFi networks on Linux systems.
 Using this library, you can discover networks, connect to them, save your configurations, and much, much more.
 
