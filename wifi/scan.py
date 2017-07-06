@@ -103,11 +103,11 @@ def normalize(cell_block):
     # The cell blocks come in with every line except the first indented at
     # least 20 spaces.  This removes the first 20 spaces off of those lines.
     lines = textwrap.dedent(' ' * 20 + cell_block).splitlines()
+
     cell = Cell()
 
-    while lines:
-        line = lines.pop(0)
-
+    for line in lines:
+        
         if line.startswith('Quality'):
             for re_name, quality_re in quality_re_dict.items():
                 match_result = quality_re.search(line)
@@ -138,6 +138,13 @@ def normalize(cell_block):
                     values += lines.pop(0).strip().split('; ')
 
             cell.bitrates.extend(values)
+        elif line.startswith('    Authentication Suites'):
+            key , value = split_on_colon(line)
+            if value == '802.1x' and cell.encryption_type == 'wpa2':
+                cell.encryption_type = 'wpa2-enterprise'
+            elif value == '802.1x' and cell.encryption_type == 'wpa':
+                cell.encryption_type = 'wpa-enterprise'
+
         elif ':' in line:
             key, value = split_on_colon(line)
             key = normalize_key(key)
@@ -151,10 +158,13 @@ def normalize(cell_block):
                 while lines and lines[0].startswith(' ' * 4):
                     values.append(lines.pop(0).strip())
 
-                if 'WPA2' in value:
+                if 'WPA2' in value and not hasattr(cell, 'encryption_type'):
                     cell.encryption_type = 'wpa2'
-                elif 'WPA' in value:
+                elif 'WPA' in value and not hasattr(cell, 'encryption_type'):
                     cell.encryption_type = 'wpa'
+                elif 'WPA' in value and cell.encryption_type == 'wpa2' or 'WPA2' in value and cell.encryption_type == 'wpa':
+                    cell.encryption_type = 'wpa/wpa2'
+                
             if key == 'frequency':
                 matches = frequency_re.search(value)
                 cell.frequency = matches.group('frequency')
