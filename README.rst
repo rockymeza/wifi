@@ -25,7 +25,7 @@ wifi command is also implemented as a library that can be used from Python.
     # wifi --help
 
 
-.. image:: https://travis-ci.org/rockymeza/wifi.png?branch=master
-   :target: https://travis-ci.org/rockymeza/wifi
+.. image:: https://travis-ci.org/melvyn-sopacua/wifi.png?branch=master
+   :target: https://travis-ci.org/melvyn-sopacua/wifi
 
 The documentation for wifi lives at https://wifi.readthedocs.org/en/latest/.
