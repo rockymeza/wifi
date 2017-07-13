@@ -158,9 +158,9 @@ def normalize(cell_block):
                 while lines and lines[0].startswith(' ' * 4):
                     values.append(lines.pop(0).strip())
 
-                if 'WPA2' in value and cell.encryption_type is not None:
+                if 'WPA2' in value and cell.encryption_type is None:
                     cell.encryption_type = 'wpa2'
-                elif 'WPA' in value and cell.encryption_type is not None:
+                elif 'WPA' in value and cell.encryption_type is None:
                     cell.encryption_type = 'wpa'
                 elif 'WPA' in value and cell.encryption_type == 'wpa2' or 'WPA2' in value and cell.encryption_type == 'wpa':
                     cell.encryption_type = 'wpa/wpa2'
