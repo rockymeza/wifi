@@ -64,8 +64,8 @@ class Cell(object):
 
 cells_re = re.compile(r'Cell \d+ - ')
 quality_re_dict = {'dBm': re.compile(r'Quality[=:](?P<quality>\d+/\d+).*Signal level[=:](?P<siglevel>-\d+) dBm?(.*Noise level[=:](?P<noiselevel>-\d+) dBm)?'),
-                   'relative': re.compile(r'Quality[=:](?P<quality>\d+/\d+).*Signal level[=:](?P<siglevel>\d+/\d+)'),
-                   'absolute': re.compile(r'Quality[=:](?P<quality>\d+).*Signal level[=:](?P<siglevel>\d+)')}
+                   'relative': re.compile(r'Quality[=:](?P<quality>\d+/\d+)\s.*Signal level[=:](?P<siglevel>\d+/\d+)'),
+                   'absolute': re.compile(r'Quality[=:](?P<quality>\d+)\s.*Signal level[=:](?P<siglevel>\d+)')}
 frequency_re = re.compile(r'^(?P<frequency>[\d\.]+ .Hz)(?:[\s\(]+Channel\s+(?P<channel>\d+)[\s\)]+)?$')
 
 
