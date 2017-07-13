@@ -1,96 +1,92 @@
 from unittest import TestCase
 
-from wifi.scan import Cell
 from wifi.exceptions import InterfaceError
+from wifi.scan import Cell
 
 
 class IWListParserTest(TestCase):
     def test_no_encryption(self):
         cell = Cell.from_string(IWLIST_SCAN_NO_ENCRYPTION)
         self.assertFalse(cell.encrypted)
-        self.assertEqual(cell.ssid, 'My Wireless Network')
-        self.assertEqual(cell.signal, -51)
-        self.assertEqual(cell.quality, '59/70')
-        self.assertEqual(cell.frequency, '2.437 GHz')
-        self.assertEqual(cell.mode, 'Master')
-        self.assertEqual(cell.channel, 6)
+        self.assertEqual('My Wireless Network', cell.ssid)
+        self.assertEqual(-51, cell.signal)
+        self.assertEqual('59/70', cell.quality)
+        self.assertEqual('2.437 GHz', cell.frequency)
+        self.assertEqual('Master', cell.mode)
+        self.assertEqual(6, cell.channel)
 
     def test_wep(self):
         cell = Cell.from_string(IWLIST_SCAN_WEP)
         self.assertTrue(cell.encrypted)
-        self.assertEqual(cell.encryption_type, 'wep')
+        self.assertEqual('wep', cell.encryption_type)
 
     def test_wpa2(self):
         cell = Cell.from_string(IWLIST_SCAN_WPA2)
         self.assertTrue(cell.encrypted)
-        self.assertEqual(cell.encryption_type, 'wpa2')
-        
+        self.assertEqual('wpa2', cell.encryption_type)
+
     def test_wpa_wpa2(self):
         cell = Cell.from_string(IWLIST_SCAN_WPA_WPA2)
         self.assertTrue(cell.encrypted)
-        self.assertEqual(cell.encryption_type, 'wpa/wpa2')
+        self.assertEqual('wpa/wpa2', cell.encryption_type)
 
     def test_wpa2_enterprise(self):
         cell = Cell.from_string(IWLIST_SCAN_WPA2_ENTERPRISE)
         self.assertTrue(cell.encrypted)
-        self.assertEqual(cell.encryption_type, 'wpa2-enterprise')
+        self.assertEqual('wpa2-enterprise', cell.encryption_type)
 
     def test_wpa_enterprise(self):
         cell = Cell.from_string(IWLIST_SCAN_WPA_ENTERPRISE)
         self.assertTrue(cell.encrypted)
-        self.assertEqual(cell.encryption_type, 'wpa-enterprise')
+        self.assertEqual('wpa-enterprise', cell.encryption_type)
 
     def test_wpa1(self):
         cell = Cell.from_string(IWLIST_SCAN_WPA1)
         self.assertTrue(cell.encrypted)
-        self.assertEqual(cell.encryption_type, 'wpa')
+        self.assertEqual('wpa', cell.encryption_type)
 
     def test_alternative_iwlist_output(self):
         # https://github.com/rockymeza/wifi/issues/12
         cell = Cell.from_string(ALTERNATIVE_OUTPUT)
-        self.assertEqual(cell.quality, '78/100')
-        self.assertEqual(cell.signal, -92)
+        self.assertEqual('78/100', cell.quality)
+        self.assertEqual(-92, cell.signal)
 
     def test_signal_level_out_of_sixty(self):
         cell = Cell.from_string(ALTERNATIVE_OUTPUT2)
-        self.assertEqual(cell.signal, -71)
+        self.assertEqual(-71, cell.signal)
 
     def test_noname_cell(self):
         cell = Cell.from_string(NONAME_WIRELESS_NETWORK)
-        self.assertEqual(cell.ssid, '')
+        self.assertEqual('', cell.ssid)
 
     def test_no_channel_output(self):
-        # https://github.com/rockymeza/wifi/issues/24
         cell = Cell.from_string(NO_CHANNEL_OUTPUT)
-        self.assertEqual(cell.channel, 11)
+        self.assertEqual(11, cell.channel)
 
     def test_list_index_error(self):
-        # https://github.com/rockymeza/wifi/issues/42
         cell = Cell.from_string(LIST_INDEX_ERROR)
 
     def test_frequency_no_channel_output(self):
-        # https://github.com/rockymeza/wifi/issues/39
         cell = Cell.from_string(FREQUENCY_NO_CHANNEL_OUTPUT)
-        self.assertEqual(cell.channel, 149)
+        self.assertEqual(149, cell.channel)
 
     def test_absolute_quality(self):
         # https://github.com/rockymeza/wifi/pull/45
         cell = Cell.from_string(ABSOLUTE_QUALITY)
-        self.assertEqual(cell.quality, '38/100')
-        self.assertEqual(cell.signal, -92)
+        self.assertEqual('38/100', cell.quality)
+        self.assertEqual(-92, cell.signal)
 
     def test_blank_ssid(self):
-        # https://github.com/rockymeza/wifi/issues/86
         cell = Cell.from_string(NO_SSID_AT_ALL)
-        self.assertEqual(cell.ssid, None)
+        self.assertEqual(None, cell.ssid)
 
     def test_noise_no_data(self):
         cell = Cell.from_string(IWLIST_SCAN_NO_ENCRYPTION)
-        self.assertEqual(cell.noise, None)
+        self.assertEqual(None, cell.noise)
 
     def test_noise_data_present(self):
         cell = Cell.from_string(LIST_INDEX_ERROR)
-        self.assertEqual(cell.noise, -92)
+        self.assertEqual(-92, cell.noise)
 
 
 class ScanningTest(TestCase):
