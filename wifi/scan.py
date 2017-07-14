@@ -193,7 +193,7 @@ def normalize(cell_block):
                 cell.encryption_type = 'wpa2-enterprise'
             elif '802.1x' in value and cell.encryption_type == 'wpa':
                 cell.encryption_type = 'wpa-enterprise'
-            cell.authentication_suites = value.split(sep=' ')
+            cell.authentication_suites = value.split(' ')
 
         elif ':' in line:
             key, value = split_on_colon(line)
