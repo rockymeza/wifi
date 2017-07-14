@@ -1,11 +1,10 @@
-from unittest import TestCase
-import tempfile
 import os
+import tempfile
+from unittest import TestCase
 
 from wifi import Cell
-from wifi.scheme import extract_schemes, Scheme
 from wifi.exceptions import ConnectionError
-
+from wifi.scheme import extract_schemes, Scheme
 
 NETWORK_INTERFACES_FILE = """
 # This file describes the network interfaces available on your system
@@ -165,6 +164,7 @@ class TestForCell(TestCase):
         cell.ssid = 'SSID'
         cell.encrypted = True
         cell.encryption_type = 'wpa2'
+        cell.authentication_suites = ['PSK']
 
         scheme = Scheme.for_cell('wlan0', 'test', cell, b'passkey')
 
@@ -179,6 +179,7 @@ class TestForCell(TestCase):
         cell.ssid = 'SSID'
         cell.encrypted = True
         cell.encryption_type = 'wpa'
+        cell.authentication_suites = ['PSK']
 
         scheme = Scheme.for_cell('wlan0', 'test', cell, 'passkey')
 

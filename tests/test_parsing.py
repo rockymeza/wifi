@@ -1,4 +1,11 @@
 from unittest import TestCase
+try:
+    from unittest.mock import patch
+except ImportError:
+    try:
+        from mock import patch
+    except ImportError:
+        raise ImportError('The mock library is required for testing')
 
 from wifi.exceptions import InterfaceError
 from wifi.scan import Cell
@@ -94,6 +101,10 @@ class ScanningTest(TestCase):
         self.assertRaises(InterfaceError, Cell.all, 'fake-interface')
 
 
+class WpaSupCfgWriterTest(TestCase):
+    def test_wpa1_psk(self):
+        cell = Cell.from_string(IWLIST_SCAN_WPA1)
+        self.assertEqual(WSCFG_WPA1, cell.gen_wpasup_cfg('supersecret'))
 IWLIST_SCAN_NO_ENCRYPTION = """Cell 02 - Address: 
                     Channel:6
                     Frequency:2.437 GHz (Channel 6)
@@ -199,7 +210,7 @@ IWLIST_SCAN_WPA_ENTERPRISE = """Cell 04 - Address:
 """
 
 IWLIST_SCAN_WPA1 = """Cell 01 - Address: 
-                    ESSID:
+                    ESSID: Super-Secret-Network
                     Protocol:IEEE 802.11bg
                     Mode:Master
                     Frequency:2.457 GHz (Channel 10)
@@ -343,4 +354,10 @@ NO_SSID_AT_ALL = """Cell 10 - Address: 02:CA:FE:CA:CA:40
                     IE: Unknown: 2D1ACE111BFF00000000000000000000000100000000000000000000
                     IE: Unknown: 3D16050000000000FF000000000000000000000000000000
                     IE: Unknown: DD070050F202000100
+"""
+WSCFG_WPA1 = """network={
+    ssid="Super-Secret-Network"
+    psk=dc2d110b2f7a04a4c36374b47b9ef048625f7a20808ae1e54b3053a8652ec0a6
+    key_mgmt=WPA-PSK
+}
 """

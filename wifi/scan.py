@@ -4,8 +4,8 @@ import re
 import textwrap
 
 import wifi.subprocess_compat as subprocess
-from wifi.utils import db2dbm
 from wifi.exceptions import InterfaceError
+from wifi.utils import db2dbm, pass2psk
 
 
 class Cell(object):
@@ -20,6 +20,7 @@ class Cell(object):
         self.channel = None
         self.encrypted = False
         self.encryption_type = None
+        self.authentication_suites = []
         self.frequency = None
         self.mode = None
         self.quality = None
@@ -27,7 +28,7 @@ class Cell(object):
         self.noise = None
 
     def __repr__(self):
-        return 'Cell(ssid={ssid})'.format(**vars(self))
+        return 'Cell(ssid={ssid})'.format(ssid=self.ssid)
 
     @classmethod
     def all(cls, interface):
@@ -61,6 +62,44 @@ class Cell(object):
         """
         return list(filter(fn, cls.all(interface)))
 
+    def gen_wpasup_cfg(self, passphrase=None, psk=None, file=None):
+        """
+        Generate a wpa_supplicant(1) configuration for the cell
+
+        Generates a configuration bit from the parsed cell that is equivalent to
+        a `wpa_supplicant` network definition. A passphrase or psk must be
+        provided if the cell is encrypted.
+
+        The cell must have an ssid.
+
+        :param passphrase: If provided, the raw passphrase for the cell's key
+        :param psk: If provided, a hexencoded Pre Shared Key for the cell
+        :param file: If provided, write to the file-like object.
+        :return: The generated configuration
+        """
+        if self.ssid is None:
+            raise ValueError('ssid required for wpa_supplicant configuration')
+        retval = ''
+        if self.encrypted:
+            if not passphrase and not psk:
+                raise ValueError('A passphrase or Pre Shared Key is required '
+                                 'for encrypted cells.')
+            if 'wpa' in self.encryption_type:
+                if 'PSK' in self.authentication_suites:
+                    if not psk:
+                        psk = pass2psk(self.ssid, passphrase)
+                    retval = wpasup_psk_cfg_fmt.format(
+                        ssid=self.ssid, psk=psk
+                    )
+
+        if not retval:
+            raise NotImplementedError('No support for this cell implemented')
+        if file:
+            file.write(retval)
+
+        return retval
+
+
 
 cells_re = re.compile(r'Cell \d+ - ')
 quality_re_dict = {'dBm': re.compile(r'Quality[=:](?P<quality>\d+/\d+).*Signal level[=:](?P<siglevel>-\d+) dBm?(.*Noise level[=:](?P<noiselevel>-\d+) dBm)?'),
@@ -69,12 +108,21 @@ quality_re_dict = {'dBm': re.compile(r'Quality[=:](?P<quality>\d+/\d+).*Signal l
 frequency_re = re.compile(r'^(?P<frequency>[\d\.]+ .Hz)(?:[\s\(]+Channel\s+(?P<channel>\d+)[\s\)]+)?$')
 
 
-identity = lambda x: x
-
 key_translations = {
     'encryption key': 'encrypted',
     'essid': 'ssid',
 }
+
+wpasup_psk_cfg_fmt = """network={{
+    ssid="{ssid:s}"
+    psk={psk:s}
+    key_mgmt=WPA-PSK
+}}
+"""
+
+
+def identity(x):
+    return x
 
 
 def normalize_key(key):
@@ -138,12 +186,14 @@ def normalize(cell_block):
                     values += lines.pop(0).strip().split('; ')
 
             cell.bitrates.extend(values)
+
         elif line.startswith('    Authentication Suites'):
-            key , value = split_on_colon(line)
-            if value == '802.1x' and cell.encryption_type == 'wpa2':
+            key , value = split_on_colon(line)  # type: str, str
+            if '802.1x' in value and cell.encryption_type == 'wpa2':
                 cell.encryption_type = 'wpa2-enterprise'
-            elif value == '802.1x' and cell.encryption_type == 'wpa':
+            elif '802.1x' in value and cell.encryption_type == 'wpa':
                 cell.encryption_type = 'wpa-enterprise'
+            cell.authentication_suites = value.split(sep=' ')
 
         elif ':' in line:
             key, value = split_on_colon(line)
