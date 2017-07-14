@@ -2,6 +2,7 @@ from __future__ import print_function, unicode_literals, division
 
 import os
 import sys
+from pbkdf2 import PBKDF2
 
 
 if sys.version < '3':
@@ -55,3 +56,9 @@ def ensure_file_exists(filename):
     """
     if not os.path.exists(filename):
         open(filename, 'a').close()
+
+
+def pass2psk(ssid, raw):
+    # Note: this relies on the default being HMAC-SHA1.
+    obj = PBKDF2(raw, ssid, iterations=4096)
+    return obj.hexread(32)
