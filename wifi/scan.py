@@ -34,6 +34,9 @@ class Cell(object):
     def all(cls, interface):
         """
         Returns a list of all cells extracted from the output of iwlist.
+
+        :param interface: Interface name as shown by `ip a`
+        :type interface: str
         """
         try:
             iwlist_scan = subprocess.check_output(['/sbin/iwlist', interface, 'scan'],
@@ -49,8 +52,9 @@ class Cell(object):
     @classmethod
     def from_string(cls, cell_string):
         """
-        Parses the output of iwlist scan for one cell and returns a Cell
-        object for it.
+        Parses provided string and returns a Cell object for it.
+
+        :param cell_string: Output of `iwlist` for one cell.
         """
         return normalize(cell_string)
 
@@ -59,6 +63,11 @@ class Cell(object):
         """
         Runs a filter over the output of :meth:`all` and the returns
         a list of cells that match that filter.
+
+        :param interface: Interface name as shown by `ip a`
+        :type interface: str
+        :param fn: Callback for the built-in `filter` method
+        :type fn: callable
         """
         return list(filter(fn, cls.all(interface)))
 
@@ -91,6 +100,8 @@ class Cell(object):
                     retval = wpasup_psk_cfg_fmt.format(
                         ssid=self.ssid, psk=psk
                     )
+        else:
+            retval = wpasup_open_cfg_fmt.format(ssid=self.ssid)
 
         if not retval:
             raise NotImplementedError('No support for this cell implemented')
@@ -99,14 +110,24 @@ class Cell(object):
 
         return retval
 
-
-
 cells_re = re.compile(r'Cell \d+ - ')
-quality_re_dict = {'dBm': re.compile(r'Quality[=:](?P<quality>\d+/\d+).*Signal level[=:](?P<siglevel>-\d+) dBm?(.*Noise level[=:](?P<noiselevel>-\d+) dBm)?'),
-                   'relative': re.compile(r'Quality[=:](?P<quality>\d+/\d+)\s.*Signal level[=:](?P<siglevel>\d+/\d+)'),
-                   'absolute': re.compile(r'Quality[=:](?P<quality>\d+)\s.*Signal level[=:](?P<siglevel>\d+)')}
-frequency_re = re.compile(r'^(?P<frequency>[\d\.]+ .Hz)(?:[\s\(]+Channel\s+(?P<channel>\d+)[\s\)]+)?$')
 
+quality_re_dict = {
+    'dBm': re.compile(
+        r'Quality[=:](?P<quality>\d+/\d+).*Signal level[=:](?P<siglevel>-\d+) '
+        'dBm?(.*Noise level[=:](?P<noiselevel>-\d+) dBm)?'
+    ),
+    'relative': re.compile(
+        r'Quality[=:](?P<quality>\d+/\d+)\s.*Signal level[=:]'
+        '(?P<siglevel>\d+/\d+)'
+    ),
+    'absolute': re.compile(
+        r'Quality[=:](?P<quality>\d+)\s.*Signal level[=:](?P<siglevel>\d+)'
+    )
+}
+frequency_re = re.compile(
+    r'^(?P<frequency>[\d\.]+ .Hz)(?:[\s\(]+Channel\s+(?P<channel>\d+)[\s\)]+)?$'
+)
 
 key_translations = {
     'encryption key': 'encrypted',
@@ -117,6 +138,12 @@ wpasup_psk_cfg_fmt = """network={{
     ssid="{ssid:s}"
     psk={psk:s}
     key_mgmt=WPA-PSK
+}}
+"""
+
+wpasup_open_cfg_fmt = """network={{
+    ssid="{ssid:s}"
+    key_mgmt=NONE
 }}
 """
 
@@ -168,7 +195,7 @@ def normalize(cell_block):
                         actual, total = map(int, signal.split('/'))
                         cell.signal = db2dbm(int((actual / total) * 100))
                     elif re_name == 'absolute':
-                        cell.quality = cell.quality + '/100'
+                        cell.quality += '/100'
                         cell.signal = db2dbm(int(signal))
                     else:
                         cell.signal = int(signal)

@@ -105,6 +105,21 @@ class WpaSupCfgWriterTest(TestCase):
     def test_wpa1_psk(self):
         cell = Cell.from_string(IWLIST_SCAN_WPA1)
         self.assertEqual(WSCFG_WPA1, cell.gen_wpasup_cfg('supersecret'))
+
+    def test_wpa2_psk(self):
+        cell = Cell.from_string(IWLIST_SCAN_WPA2)
+        self.assertEqual(WSCFG_WPA2, cell.gen_wpasup_cfg('supersecret'))
+
+    def test_open_ap(self):
+        cell = Cell.from_string(IWLIST_SCAN_NO_ENCRYPTION)
+        self.assertEqual(WSCFG_OPEN, cell.gen_wpasup_cfg())
+
+    def test_unimplemented(self):
+        cell = Cell.from_string(IWLIST_SCAN_WPA_ENTERPRISE)
+        with self.assertRaises(NotImplementedError):
+            cell.gen_wpasup_cfg('supersecret')
+
+
 IWLIST_SCAN_NO_ENCRYPTION = """Cell 02 - Address: 
                     Channel:6
                     Frequency:2.437 GHz (Channel 6)
@@ -210,7 +225,7 @@ IWLIST_SCAN_WPA_ENTERPRISE = """Cell 04 - Address:
 """
 
 IWLIST_SCAN_WPA1 = """Cell 01 - Address: 
-                    ESSID: Super-Secret-Network
+                    ESSID: WPA1
                     Protocol:IEEE 802.11bg
                     Mode:Master
                     Frequency:2.457 GHz (Channel 10)
@@ -356,8 +371,19 @@ NO_SSID_AT_ALL = """Cell 10 - Address: 02:CA:FE:CA:CA:40
                     IE: Unknown: DD070050F202000100
 """
 WSCFG_WPA1 = """network={
-    ssid="Super-Secret-Network"
-    psk=dc2d110b2f7a04a4c36374b47b9ef048625f7a20808ae1e54b3053a8652ec0a6
+    ssid="WPA1"
+    psk=a5e060ee3b1cb4b4f18b02b99a52d0ae037e90e428101eb8bae305580522e7be
     key_mgmt=WPA-PSK
+}
+"""
+WSCFG_WPA2 = """network={
+    ssid="WPA2"
+    psk=2f14acebcf8e08d502f8d83d22a6addc92275f3e940c379a24f340c0705ebfee
+    key_mgmt=WPA-PSK
+}
+"""
+WSCFG_OPEN = """network={
+    ssid="My Wireless Network"
+    key_mgmt=NONE
 }
 """
