@@ -95,6 +95,18 @@ class IWListParserTest(TestCase):
         cell = Cell.from_string(LIST_INDEX_ERROR)
         self.assertEqual(-92, cell.noise)
 
+    def test_bssid(self):
+        # This seems like a useless test, yet if bssid is refactored and not
+        # in sync with address attribute, this will alert us.
+        cell = Cell.from_string(ALTERNATIVE_OUTPUT)
+        self.assertEqual(cell.address, cell.bssid)
+        cell.bssid = 'AC:22:05:25:3B:6A'
+        self.assertEqual('AC:22:05:25:3B:6A', cell.address)
+
+    def test_pairwise_ciphers(self):
+        cell = Cell.from_string(IWLIST_SCAN_WPA_WPA2_DUAL_CIPHERS)
+        self.assertListEqual(['CCMP', 'TKIP'], cell.pairwise_ciphers)
+
 
 class ScanningTest(TestCase):
     def test_scanning(self):
@@ -169,7 +181,27 @@ IWLIST_SCAN_WPA_WPA2 = """Cell 08 - Address:
                         Pairwise Ciphers (1) : TKIP
                         Authentication Suites (1) : PSK
                     """
-
+IWLIST_SCAN_WPA_WPA2_DUAL_CIPHERS = """Cell 03 - Address: 98:F5:37:59:55:EC
+                    Channel:1
+                    Frequency:2.412 GHz (Channel 1)
+                    Quality=25/70  Signal level=-85 dBm
+                    Encryption key:on
+                    ESSID:"H220N5955EC"
+                    Bit Rates:1 Mb/s; 2 Mb/s; 5.5 Mb/s; 11 Mb/s; 18 Mb/s
+                              24 Mb/s; 36 Mb/s; 54 Mb/s
+                    Bit Rates:6 Mb/s; 9 Mb/s; 12 Mb/s; 48 Mb/s
+                    Mode:Master
+                    Extra:tsf=0000000000000000
+                    Extra: Last beacon: 70ms ago
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : TKIP
+                        Pairwise Ciphers (2) : CCMP TKIP
+                        Authentication Suites (1) : PSK
+                    IE: WPA Version 1
+                        Group Cipher : TKIP
+                        Pairwise Ciphers (2) : CCMP TKIP
+                        Authentication Suites (1) : PSK
+"""
 IWLIST_SCAN_WPA2 = """Cell 02 - Adress:
                     Channel:1
                     Frequency:2.412 GHz (Channel 1)
@@ -374,12 +406,14 @@ WSCFG_WPA1 = """network={
     ssid="WPA1"
     psk=a5e060ee3b1cb4b4f18b02b99a52d0ae037e90e428101eb8bae305580522e7be
     key_mgmt=WPA-PSK
+    # bssid=None
 }
 """
 WSCFG_WPA2 = """network={
     ssid="WPA2"
     psk=2f14acebcf8e08d502f8d83d22a6addc92275f3e940c379a24f340c0705ebfee
     key_mgmt=WPA-PSK
+    # bssid=None
 }
 """
 WSCFG_OPEN = """network={

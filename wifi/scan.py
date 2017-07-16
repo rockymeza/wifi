@@ -20,6 +20,7 @@ class Cell(object):
         self.channel = None
         self.encrypted = False
         self.encryption_type = None
+        self.pairwise_ciphers = []
         self.authentication_suites = []
         self.frequency = None
         self.mode = None
@@ -71,24 +72,38 @@ class Cell(object):
         """
         return list(filter(fn, cls.all(interface)))
 
-    def gen_wpasup_cfg(self, passphrase=None, psk=None, file=None):
+    @property
+    def bssid(self):
+        return self.address
+
+    @bssid.setter
+    def bssid(self, value):
+        self.address = value
+
+    def gen_wpasup_cfg(self, passphrase=None, psk=None, file=None,
+                       include_bssid=False):
         """
         Generate a wpa_supplicant(1) configuration for the cell
 
         Generates a configuration bit from the parsed cell that is equivalent to
         a `wpa_supplicant` network definition. A passphrase or psk must be
-        provided if the cell is encrypted.
+        provided if the cell is encrypted. If both are provided,
+        no verification is done if they match and the psk is used. The actual
+        passphrase is not returned in the output.
 
         The cell must have an ssid.
 
         :param passphrase: If provided, the raw passphrase for the cell's key
         :param psk: If provided, a hexencoded Pre Shared Key for the cell
         :param file: If provided, write to the file-like object.
+        :param include_bssid: Whether to include the bssid.
+        :type include_bssid: bool
         :return: The generated configuration
         """
         if self.ssid is None:
             raise ValueError('ssid required for wpa_supplicant configuration')
         retval = ''
+        show_bssid = 'bssid' if include_bssid else '# bssid'
         if self.encrypted:
             if not passphrase and not psk:
                 raise ValueError('A passphrase or Pre Shared Key is required '
@@ -98,7 +113,8 @@ class Cell(object):
                     if not psk:
                         psk = pass2psk(self.ssid, passphrase)
                     retval = wpasup_psk_cfg_fmt.format(
-                        ssid=self.ssid, psk=psk
+                        ssid=self.ssid, psk=psk, show_bssid=show_bssid,
+                        bssid=self.bssid
                     )
         else:
             retval = wpasup_open_cfg_fmt.format(ssid=self.ssid)
@@ -138,6 +154,7 @@ wpasup_psk_cfg_fmt = """network={{
     ssid="{ssid:s}"
     psk={psk:s}
     key_mgmt=WPA-PSK
+    {show_bssid:s}={bssid}
 }}
 """
 
@@ -214,8 +231,12 @@ def normalize(cell_block):
 
             cell.bitrates.extend(values)
 
+        elif line.startswith('    Pairwise Ciphers'):
+            key, value = split_on_colon(line)
+            cell.pairwise_ciphers = value.split(' ')
+
         elif line.startswith('    Authentication Suites'):
-            key , value = split_on_colon(line)  # type: str, str
+            key, value = split_on_colon(line)  # type: str, str
             if '802.1x' in value and cell.encryption_type == 'wpa2':
                 cell.encryption_type = 'wpa2-enterprise'
             elif '802.1x' in value and cell.encryption_type == 'wpa':
@@ -239,7 +260,8 @@ def normalize(cell_block):
                     cell.encryption_type = 'wpa2'
                 elif 'WPA' in value and cell.encryption_type is None:
                     cell.encryption_type = 'wpa'
-                elif 'WPA' in value and cell.encryption_type == 'wpa2' or 'WPA2' in value and cell.encryption_type == 'wpa':
+                elif 'WPA' in value and cell.encryption_type == 'wpa2' or \
+                        'WPA2' in value and cell.encryption_type == 'wpa':
                     cell.encryption_type = 'wpa/wpa2'
                 
             if key == 'frequency':
