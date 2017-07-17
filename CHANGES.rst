@@ -3,11 +3,24 @@ Changelog
 
 0.4.0
 ^^^^^
-:release-date: unknown
+:release-date: 2017-07-17
 
 - Make the wifi command name configurable (#55 - thanks yourealwaysbe)
 - Add a __main__.py so that wifi can be invoked using python -mwifi
 - Fix argument parsing so that scan is the default argument even with options passed
+- Add preliminary EAP support (#63 - thanks irgusite)
+- Update test suite and overal PEP8 formatting
+- Fix WPA detection
+- Fix relative signal level parsing to not rely on stabel dictionary order
+- Centralize code to reform a passphrase to a psk
+- Add ability to generate a `wpa_supplicant` network configuration from a cell
+- Add parsing for:
+  - Group cipher
+  - Pairwise ciphers
+  - Authentication suites
+  Please note that it's likely to be refactored into a separate object, as more then
+  one of these triples may exist for a given cell.
+- Add logging
 
 0.3.8
 ^^^^^

@@ -26,9 +26,12 @@ Each cell object should have the following attributes:
 - :attr:`address`
 - :attr:`mode`
 
-For cells that have :attr:`encrypted` as `True`, there will also be the following attributes:
+For cells that have :attr:`encrypted` as `True`, there will also be the following attribute:
 
 - :attr:`encryption_type`
+
+Additional attributes may be available, based on the type of the encryption. Support for this
+has started in release 0.4.0 and will be enhanced in to subsequent releases.
 
 .. note::
 
