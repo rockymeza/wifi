@@ -25,15 +25,7 @@ except ImportError:
 else:
     del argparse
 
-tests_require = []
-try:
-    import unittest.mock
-except ImportError:
-    tests_require.append('mock>=2.0')
-else:
-    del unittest.mock
-
-version = '1.0.0'
+version = '0.4.0'
 
 should_install_cli = os.environ.get('WIFI_INSTALL_CLI') not in ['False', '0']
 command_name = os.environ.get('WIFI_CLI_NAME', 'wifi')
@@ -72,7 +64,6 @@ setup(
     packages=['wifi'],
     entry_points=entry_points,
     test_suite='tests',
-    tests_require=tests_require,
     platforms=["Debian"],
     license='BSD',
     install_requires=install_requires,
