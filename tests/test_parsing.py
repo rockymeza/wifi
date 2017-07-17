@@ -1,11 +1,4 @@
 from unittest import TestCase
-try:
-    from unittest.mock import patch
-except ImportError:
-    try:
-        from mock import patch
-    except ImportError:
-        raise ImportError('The mock library is required for testing')
 
 from wifi.exceptions import InterfaceError
 from wifi.scan import Cell
