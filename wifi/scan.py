@@ -5,7 +5,7 @@ import textwrap
 
 import wifi.subprocess_compat as subprocess
 from wifi.exceptions import InterfaceError
-from wifi.utils import db2dbm, pass2psk
+from wifi.utils import db2dbm, pass2psk, logger
 
 
 class Cell(object):
@@ -20,6 +20,7 @@ class Cell(object):
         self.channel = None
         self.encrypted = False
         self.encryption_type = None
+        self.group_cipher = None
         self.pairwise_ciphers = []
         self.authentication_suites = []
         self.frequency = None
@@ -39,14 +40,17 @@ class Cell(object):
         :param interface: Interface name as shown by `ip a`
         :type interface: str
         """
+        logger.debug('Scanning all on interface {}'.format(interface))
         try:
-            iwlist_scan = subprocess.check_output(['/sbin/iwlist', interface, 'scan'],
-                                                  stderr=subprocess.STDOUT)
+            iwlist_scan = subprocess.check_output(
+                ['/sbin/iwlist', interface, 'scan'], stderr=subprocess.STDOUT
+            )
         except subprocess.CalledProcessError as e:
             raise InterfaceError(e.output.strip())
-        else:
-            iwlist_scan = iwlist_scan.decode('utf-8')
+
+        iwlist_scan = iwlist_scan.decode('utf-8')
         cells = map(Cell.from_string, cells_re.split(iwlist_scan)[1:])
+        logger.debug('Scan succesful')
 
         return cells
 
@@ -100,6 +104,9 @@ class Cell(object):
         :type include_bssid: bool
         :return: The generated configuration
         """
+        logger.debug(
+            'Generating wpa_supplicant configuration for ssid %s', self.ssid
+        )
         if self.ssid is None:
             raise ValueError('ssid required for wpa_supplicant configuration')
         retval = ''
@@ -124,6 +131,7 @@ class Cell(object):
         if file:
             file.write(retval)
 
+        logger.debug('Generated config bit:\n%s', retval)
         return retval
 
 cells_re = re.compile(r'Cell \d+ - ')
@@ -197,10 +205,11 @@ def normalize(cell_block):
     lines = textwrap.dedent(' ' * 20 + cell_block).splitlines()
 
     cell = Cell()
+    logger.debug('Starting cell block with %d lines', len(lines))
 
     for line in lines:
-        
         if line.startswith('Quality'):
+            logger.debug('- Quality line')
             for re_name, quality_re in quality_re_dict.items():
                 match_result = quality_re.search(line)
                 if match_result is not None:
@@ -221,6 +230,7 @@ def normalize(cell_block):
                     break
 
         elif line.startswith('Bit Rates'):
+            logger.debug('- Bit rates line')
             values = split_on_colon(line)[1].split('; ')
 
             # consume next line of bit rates, because they are split on
@@ -231,11 +241,17 @@ def normalize(cell_block):
 
             cell.bitrates.extend(values)
 
+        elif line.startswith('    Group Cipher'):
+            logger.debug('- Group Cipher line')
+            __, cell.group_cipher = split_on_colon(line)
+
         elif line.startswith('    Pairwise Ciphers'):
+            logger.debug('- Pairwise ciphers line')
             key, value = split_on_colon(line)
             cell.pairwise_ciphers = value.split(' ')
 
         elif line.startswith('    Authentication Suites'):
+            logger.debug('- Authentication suites line')
             key, value = split_on_colon(line)  # type: str, str
             if '802.1x' in value and cell.encryption_type == 'wpa2':
                 cell.encryption_type = 'wpa2-enterprise'
@@ -244,6 +260,7 @@ def normalize(cell_block):
             cell.authentication_suites = value.split(' ')
 
         elif ':' in line:
+            logger.debug('- Line with colon')
             key, value = split_on_colon(line)
             key = normalize_key(key)
 
@@ -271,10 +288,13 @@ def normalize(cell_block):
                     cell.channel = int(matches.group('channel'))
             elif key in normalize_value:
                 setattr(cell, key, normalize_value[key](value))
+        else:
+            logger.debug('- Line of no interest: "%s"', line.strip())
 
     # It seems that encryption types other than WEP need to specify their
     # existence.
     if cell.encrypted and not cell.encryption_type:
+        logger.debug('Defaulting to WEP')
         cell.encryption_type = 'wep'
 
     return cell

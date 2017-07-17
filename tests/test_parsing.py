@@ -107,6 +107,10 @@ class IWListParserTest(TestCase):
         cell = Cell.from_string(IWLIST_SCAN_WPA_WPA2_DUAL_CIPHERS)
         self.assertListEqual(['CCMP', 'TKIP'], cell.pairwise_ciphers)
 
+    def test_group_cipher(self):
+        cell = Cell.from_string(IWLIST_SCAN_WPA2)
+        self.assertEqual('CCMP', cell.group_cipher)
+
 
 class ScanningTest(TestCase):
     def test_scanning(self):

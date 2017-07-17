@@ -1,7 +1,9 @@
 from __future__ import print_function, unicode_literals, division
 
+import logging
 import os
 import sys
+
 from pbkdf2 import PBKDF2
 
 
@@ -62,3 +64,7 @@ def pass2psk(ssid, raw):
     # Note: this relies on the default being HMAC-SHA1.
     obj = PBKDF2(raw, ssid, iterations=4096)
     return obj.hexread(32)
+
+logger = logging.getLogger('wifi')
+if os.getenv('WIFI_DEBUG', False):
+    logger.setLevel(logging.DEBUG)
