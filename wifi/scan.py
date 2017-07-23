@@ -5,7 +5,7 @@ import textwrap
 
 import wifi.subprocess_compat as subprocess
 from wifi.exceptions import InterfaceError
-from wifi.utils import db2dbm, pass2psk, logger
+from wifi.utils import db2dbm, pass2psk, logger, PrivilegedCommand
 
 
 class Cell(object):
@@ -33,18 +33,40 @@ class Cell(object):
         return 'Cell(ssid={ssid})'.format(ssid=self.ssid)
 
     @classmethod
-    def all(cls, interface):
+    def all(cls, interface, timeout=None, use_sudo=False):
         """
         Returns a list of all cells extracted from the output of iwlist.
 
+        The timeout parameter (new in 0.8.0) is passed on to the subprocess
+        module. If a postive number is given it is interpreted as the maximum
+        number of seconds to wait for the command to complete. Fractions are
+        supported.
+        If the parameter is `None` (the default), then it blocks and waits
+        indefinitely for the command to complete. This default will likely
+        change to an acceptable timeout.
+
+        The use_sudo parameter (new in 0.8.0) adds support for running the
+        command as root, via the program `sudo(8)`. For now the default is
+        False for backwards compatibility, but will change in 0.9.0 to true.
+
         :param interface: Interface name as shown by `ip a`
         :type interface: str
+        :param timeout: Maximum number of seconds to wait for output.
+        Default: None.
+        :type timeout: float, int, None
+        :param use_sudo: Whether or not to use sudo to run the command as root
+        :type use_sudo: bool
+
+        :raises InterfaceError: if running the command fails.
+        :raises subprocess.TimeoutExpired: if the command timed out.
         """
         logger.debug('Scanning all on interface {}'.format(interface))
+        command = PrivilegedCommand(
+            '/sbin/iwlist', interface, 'scan', timeout=timeout,
+            use_sudo=use_sudo
+        )
         try:
-            iwlist_scan = subprocess.check_output(
-                ['/sbin/iwlist', interface, 'scan'], stderr=subprocess.STDOUT
-            )
+            iwlist_scan = command(with_stderr=True)
         except subprocess.CalledProcessError as e:
             raise InterfaceError(e.output.strip())
 

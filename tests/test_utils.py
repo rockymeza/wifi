@@ -2,13 +2,15 @@
 from __future__ import unicode_literals
 
 from unittest import TestCase
+from wifi.utils import print_table, match, db2dbm, PrivilegedCommand
+from subprocess import TimeoutExpired, CalledProcessError
+import os
 
 try:
     from io import StringIO
 except ImportError:  # Python < 3
     from StringIO import StringIO
 
-from wifi.utils import print_table, match, db2dbm
 
 
 print_table_in = [
@@ -52,3 +54,28 @@ class db2dbMTest(TestCase):
         self.assertEqual(db2dbm(100), -50)
         self.assertEqual(db2dbm(101), -50)
         self.assertEqual(db2dbm(200), -50)
+
+
+class PrivilegedCommandTest(TestCase):
+    askpass_program = os.path.join(os.path.dirname(__file__), 'bin', 'ppass.py')
+
+    def test_use_sudo(self):
+        command = PrivilegedCommand('/bin/echo', 'Hello World!',
+                                    use_sudo=False)
+        self.assertEqual(command.use_sudo, False)
+        self.assertEqual('Hello World!', command().decode('utf-8').strip())
+
+    def test_timeout(self):
+        command = PrivilegedCommand('/bin/sleep', '1', timeout=0.25,
+                                    use_sudo=False)
+        with self.assertRaises(TimeoutExpired):
+            command()
+
+    def test_askpass(self):
+        if not os.getenv('WIFI_TEST_SUDO_PASSWORD', False):
+            self.skipTest('SKIP: No sudo password set in environment')
+            return
+        command = PrivilegedCommand('/bin/echo', 'Hello World!',
+                                    askpass=self.askpass_program)
+        self.assertEqual(command.use_sudo, True)
+        self.assertEqual('Hello World!', command().decode('utf-8').strip())
