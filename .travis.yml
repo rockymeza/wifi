@@ -11,3 +11,4 @@ install:
   - sudo python setup.py -q install
 # command to run tests
 script: sudo python setup.py test
+dist: trusty
