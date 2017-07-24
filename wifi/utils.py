@@ -2,11 +2,10 @@ from __future__ import print_function, unicode_literals, division
 
 import logging
 import os
-import sys
 import subprocess
+import sys
 
 from pbkdf2 import PBKDF2
-
 
 if sys.version < '3':
     str = unicode
@@ -42,7 +41,8 @@ def print_table(matrix, sep='  ', file=sys.stdout, *args, **kwargs):
     Prints a left-aligned table of elements.
     """
     lengths = [max(map(len, map(str, column))) for column in zip(*matrix)]
-    format = sep.join('{{{0}:<{1}}}'.format(i, length) for i, length in enumerate(lengths))
+    format = sep.join(
+        '{{{0}:<{1}}}'.format(i, length) for i, length in enumerate(lengths))
 
     for row in matrix:
         print(format.format(*row).strip(), file=file, *args, **kwargs)
@@ -77,22 +77,21 @@ class PrivilegedCommand(object):
     env_path = '/usr/bin/env'
     _uid = None
 
-    def __init__(self, cmd, *args, timeout=None, askpass=None,
-                 use_sudo=True, **kwargs):
-        self.use_sudo = use_sudo
-        self.askpass_program = askpass or self.askpass_program
+    def __init__(self, cmd, *args, **kwargs):
+        self.use_sudo = kwargs.pop('use_sudo', True)
+        self.askpass_program = kwargs.pop('askpass', self.askpass_program)
         self.command = []
         if self.use_sudo:
             if self.askpass_program is not None:
                 self.command.extend(
-                    [self.env_path, 'SUDO_ASKPASS='+self.askpass_program,
+                    [self.env_path, 'SUDO_ASKPASS=' + self.askpass_program,
                      self.sudo, '--askpass']
                 )
             else:
                 self.command.append(self.sudo)
         self.command.append(cmd)
         self.command.extend(args)
-        self.timeout = timeout
+        self.timeout = kwargs.pop('timeout', None)
         self.process_kwargs = kwargs
 
         super(PrivilegedCommand, self).__init__()
