@@ -1,10 +1,18 @@
 Changelog
 =========
 
+0.8.0
+^^^^^
+:release-date: 2017-07-24
+
+- Add support for sudo
+- Change default command name to `pywifi`, to evade conflicts with other packages
+
 0.4.0
 ^^^^^
 :release-date: 2017-07-17
 
+- Internal release only
 - Make the wifi command name configurable (#55 - thanks yourealwaysbe)
 - Add a __main__.py so that wifi can be invoked using python -mwifi
 - Fix argument parsing so that scan is the default argument even with options passed
