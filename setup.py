@@ -78,5 +78,6 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
     ],
-    data_files=data_files
+    data_files=data_files,
+    zip_safe=False,
 )
