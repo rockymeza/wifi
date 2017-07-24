@@ -3,10 +3,13 @@ Changelog
 
 0.8.0
 ^^^^^
-:release-date: 2017-07-24
+:release-date: 2017-07-25
 
 - Add support for sudo
 - Change default command name to `pywifi`, to evade conflicts with other packages
+- Add attribute `frequency_norm` which is the normalized frequency, aka frequency band
+  as one would find on packaging of WiFi hardware. Only 2.4Ghz and 5Ghz bands are
+  supported.
 
 0.4.0
 ^^^^^

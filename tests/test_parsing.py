@@ -104,6 +104,14 @@ class IWListParserTest(TestCase):
         cell = Cell.from_string(IWLIST_SCAN_WPA2)
         self.assertEqual('CCMP', cell.group_cipher)
 
+    def test_normalized_frequency(self):
+        cell = Cell.from_string(FREQUENCY_5G)
+        self.assertEqual(cell.frequency_norm, '5Ghz')
+        cell = Cell.from_string(IWLIST_SCAN_WPA2)
+        self.assertEqual(cell.frequency_norm, '2.4Ghz')
+        cell = Cell.from_string(FREQUENCY_UNSUPPORTED)
+        self.assertIsNone(cell.frequency_norm)
+
 
 class ScanningTest(TestCase):
     def test_scanning(self):
@@ -398,6 +406,43 @@ NO_SSID_AT_ALL = """Cell 10 - Address: 02:CA:FE:CA:CA:40
                     IE: Unknown: 2D1ACE111BFF00000000000000000000000100000000000000000000
                     IE: Unknown: 3D16050000000000FF000000000000000000000000000000
                     IE: Unknown: DD070050F202000100
+"""
+FREQUENCY_5G = """Cell 08 - Address: AC:22:05:25:3B:5B
+                    Channel:100
+                    Frequency:5.5 GHz (Channel 100)
+                    Quality=50/70  Signal level=-60 dBm
+                    Encryption key:on
+                    ESSID:"TestWifi3827"
+                    Bit Rates:6 Mb/s; 9 Mb/s; 12 Mb/s; 18 Mb/s; 24 Mb/s
+                              36 Mb/s; 48 Mb/s; 54 Mb/s
+                    Mode:Master
+                    Extra:tsf=0000008a28a3e342
+                    Extra: Last beacon: 3224ms ago
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : CCMP
+                        Pairwise Ciphers (1) : CCMP
+                        Authentication Suites (1) : PSK
+"""
+FREQUENCY_UNSUPPORTED = """Cell 08 - Address: AC:22:05:25:3B:5B
+                    Channel:100
+                    Frequency:3.6575 GHz (Channel 131)
+                    Quality=50/70  Signal level=-60 dBm
+                    Encryption key:on
+                    ESSID:"TestWifi3827"
+                    Bit Rates:6 Mb/s; 9 Mb/s; 12 Mb/s; 18 Mb/s; 24 Mb/s
+                              36 Mb/s; 48 Mb/s; 54 Mb/s
+                    Mode:Master
+                    Extra:tsf=0000008a28a3e342
+                    Extra: Last beacon: 3224ms ago
+                    IE: Unknown: 000C5A6967676F43323835373132
+                    IE: Unknown: 01088C129824B048606C
+                    IE: Unknown: 030164
+                    IE: Unknown: 200103
+                    IE: IEEE 802.11i/WPA2 Version 1
+                        Group Cipher : CCMP
+                        Pairwise Ciphers (1) : CCMP
+                        Authentication Suites (1) : PSK
+
 """
 WSCFG_WPA1 = """network={
     ssid="WPA1"

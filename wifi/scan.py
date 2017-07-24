@@ -24,6 +24,7 @@ class Cell(object):
         self.pairwise_ciphers = []
         self.authentication_suites = []
         self.frequency = None
+        self.frequency_norm = None
         self.mode = None
         self.quality = None
         self.signal = None
@@ -175,6 +176,12 @@ frequency_re = re.compile(
     r'^(?P<frequency>[\d\.]+ .Hz)(?:[\s\(]+Channel\s+(?P<channel>\d+)[\s\)]+)?$'
 )
 
+LOWBOUND_FREQ_24 = 2.412
+UPPERBOUND_FREQ_24 = 2.484
+
+LOWBOUND_FREQ_5 = 4.915
+UPPERBOUND_FREQ_5 = 5.865
+
 key_translations = {
     'encryption key': 'encrypted',
     'essid': 'ssid',
@@ -306,6 +313,12 @@ def normalize(cell_block):
             if key == 'frequency':
                 matches = frequency_re.search(value)
                 cell.frequency = matches.group('frequency')
+                f, __ = cell.frequency.split(' ', 1)
+                f = float(f)
+                if LOWBOUND_FREQ_24 <= f <= UPPERBOUND_FREQ_24:
+                    cell.frequency_norm = '2.4Ghz'
+                elif LOWBOUND_FREQ_5 <= f <= UPPERBOUND_FREQ_5:
+                    cell.frequency_norm = '5Ghz'
                 if matches.group('channel'):
                     cell.channel = int(matches.group('channel'))
             elif key in normalize_value:
