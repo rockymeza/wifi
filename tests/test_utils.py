@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from unittest import TestCase
-from wifi.utils import print_table, match, db2dbm, PrivilegedCommand
-from subprocess import TimeoutExpired, CalledProcessError
 import os
+import sys
+from unittest import TestCase
+
+from wifi.utils import print_table, match, db2dbm, PrivilegedCommand
 
 try:
     from io import StringIO
 except ImportError:  # Python < 3
     from StringIO import StringIO
 
-
+try:
+    from wifi.subprocess_compat import TimeoutExpired
+except ImportError:
+    class TimeoutExpired(Exception):
+        pass
 
 print_table_in = [
     ['1', '123456789', 'hello'],
@@ -66,6 +71,9 @@ class PrivilegedCommandTest(TestCase):
         self.assertEqual('Hello World!', command().decode('utf-8').strip())
 
     def test_timeout(self):
+        if sys.version < '3':
+            self.skipTest('Timeouts not supported on Python 2')
+            return
         command = PrivilegedCommand('/bin/sleep', '1', timeout=0.25,
                                     use_sudo=False)
         with self.assertRaises(TimeoutExpired):

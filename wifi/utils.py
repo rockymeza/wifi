@@ -103,7 +103,8 @@ class PrivilegedCommand(object):
         # is needed, that isn't tainted by accessing `self.kwargs` or similar
         #  constructs.
         kwargs = self.process_kwargs
-        kwargs['timeout'] = self.timeout
+        if not sys.version < '3':
+            kwargs['timeout'] = self.timeout
         logger.debug('Returning kwargs %r', kwargs)
         return kwargs
 
