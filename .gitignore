@@ -1,8 +1,9 @@
 *.pyc
+__pycache__
 *.egg*
-build/
-dist/
-docs/_build
+/build
+/dist
+/docs/_build
 tmp/
 .coverage
 htmlcov

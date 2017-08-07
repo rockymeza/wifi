@@ -25,7 +25,7 @@ except ImportError:
 else:
     del argparse
 
-version = '0.8.0'
+version = '0.8.0rc1'
 
 should_install_cli = os.environ.get('WIFI_INSTALL_CLI') not in ['False', '0']
 command_name = os.environ.get('WIFI_CLI_NAME', 'pywifi')
